@@ -1,6 +1,6 @@
 const express = require('express');
 const {addUser, authenticate, getUser, getUserBadgeDetails, updateUserProfileImage} = require('../controller/userController');
-const { create, getCampaigns, getCampaign } = require('../controller/campaignController');
+const { create, getCampaigns, getCampaign, getWatchlist, updateCampaignImage, getCampaignDetails } = require('../controller/campaignController');
 
 const router = express.Router();
 
@@ -15,6 +15,9 @@ router.post('/user/updateUserProfileImage', updateUserProfileImage);
 router.post('/campaign/create', create);
 router.post('/campaign/getCampaigns', getCampaigns);
 router.get('/campaign/getCampaign', getCampaign);
+router.get('/campaign/getWatchlist', getWatchlist);
+router.post('/campaign/updateCampaignImage', updateCampaignImage);
+router.get('/campaign/getCampaignDetails', getCampaignDetails);
 
 module.exports = {
     routes: router
