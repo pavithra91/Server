@@ -209,7 +209,12 @@ const updateCampaignImage = async (req, res, next) => {
 
 const getCampaignDetails = async (req, res, next) => {
   try {
-    const id = req.body.id;
+    let id = req.query.id;
+
+    var _commentlist = [];
+    var _faqlist = [];
+    var _updateslist = [];
+    var _response = [];
 
     const commentRef = db.collection('Comments');
     const commentResponse = await commentRef.where('campaignId', '==', id).get();
@@ -217,12 +222,14 @@ const getCampaignDetails = async (req, res, next) => {
     if (commentResponse.empty) {
       console.log('No matching documents for comments.');
     }
+    else{
+      commentResponse.forEach(doc => {
+        console.log(doc.id, '=>', doc.data());
+        _commentlist.push(doc.data())
+      });
 
-    var _commentlist = [];
-    commentResponse.forEach(doc => {
-      console.log(doc.id, '=>', doc.data());
-      _commentlist.push(doc.data())
-    });
+      _response.push(_commentlist);
+    }   
 
     const faqRef = db.collection('FAQ');
     const faqResponse = await faqRef.where('campaignId', '==', id).get();
@@ -230,12 +237,13 @@ const getCampaignDetails = async (req, res, next) => {
     if (faqResponse.empty) {
       console.log('No matching documents for FAQs.');
     }
-
-    var _faqlist = [];
-    faqResponse.forEach(doc => {
-      console.log(doc.id, '=>', doc.data());
-      _faqlist.push(doc.data())
-    });
+    else{      
+      faqResponse.forEach(doc => {
+        console.log(doc.id, '=>', doc.data());
+        _faqlist.push(doc.data())
+      });
+      _response.push(_faqlist);
+    }
 
     const updatesRef = db.collection('Campaign-Updates');
     const updatesResponse = await updatesRef.where('campaignId', '==', id).get();
@@ -243,17 +251,13 @@ const getCampaignDetails = async (req, res, next) => {
     if (updatesResponse.empty) {
       console.log('No matching documents for recent updates.');
     }
-
-    var _updateslist = [];
-    faqResponse.forEach(doc => {
-      console.log(doc.id, '=>', doc.data());
-      _updateslist.push(doc.data());
-    });
-
-    var _response = [];
-    _response.push(_commentlist);
-    _response.push(_faqlist);
-    _response.push(_updateslist);
+    else{
+      faqResponse.forEach(doc => {
+        console.log(doc.id, '=>', doc.data());
+        _updateslist.push(doc.data());
+      });
+      _response.push(_updateslist);
+    }  
 
     return res.status(200).json({
       status: 'success',
