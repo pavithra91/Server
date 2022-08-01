@@ -33,6 +33,8 @@ const create = async (req, res, next) => {
     Campaign.dateCreated = createdDate;
     Campaign.createdBy = req.body.createdBy;
     Campaign.id = id;
+    Campaign.headerImg = "";
+    Campaign.mainImg = "";
 
     console.log(Campaign);
 
@@ -189,9 +191,16 @@ const updateCampaignImage = async (req, res, next) => {
   try {
     const id = req.body.id;
     const imgPath = req.body.imgPath;
+    const mainImgSrc = req.body.mainImgSrc;
 
-    const userRef = db.collection('User').doc(id);
-    const response = await userRef.update({profileImg: imgPath});
+    console.log(id);
+    console.log(imgPath);
+    console.log(mainImgSrc);
+
+    const userRef = db.collection('Campaign').doc(id);
+    const response = await userRef.update({headerImg: imgPath, mainImg: mainImgSrc});
+
+    console.log(response);
 
     return res.status(200).json({
       status: 'success',
@@ -274,12 +283,43 @@ const getCampaignDetails = async (req, res, next) => {
   }
 }
 
+const getTopFundRaisers = async (req, res, next) => {
+  try {
+    const campaignRef = db.collection('Top-Fundraiser-Campaigns');
+    const snapshot = await campaignRef.get();
+    if (snapshot.empty) {
+      console.log('No matching documents.');
+      return;
+    }
+
+    var campaignlist = [];
+    snapshot.forEach(doc => {
+      console.log(doc.id, '=>', doc.data());
+      campaignlist.push(doc.data())
+    });
+
+    return res.status(200).json({
+      status: 'success',
+      data: campaignlist,
+      msg: 'No error ouccred',
+    });
+  
+  } catch (er) {
+    console.log(er);
+  //   res.status(500).json({
+  //     status: 'error',
+  //     error: er,
+  //   });
+  }
+}
+
 module.exports = {
   create,
   getCampaign,
   getCampaigns,
   getWatchlist,
   updateCampaignImage,
-  getCampaignDetails
+  getCampaignDetails,
+  getTopFundRaisers
 }
 
