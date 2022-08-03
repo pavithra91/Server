@@ -1,5 +1,5 @@
 class Campaign{
-    constructor(id, campaignName, campaignStartDate, campaignEndDate, campaignDescription, goalAmount, raiedAmount, city, province, campaignStatus, dateCreated, createdBy, headerImg, mainImg)
+    constructor(id, campaignName, campaignStartDate, campaignEndDate, campaignDescription, goalAmount, raiedAmount, city, province, campaignStatus, dateCreated, createdBy, headerImg, mainImg, noOfDonations)
     {
         this.id = id;
         this.campaignName = campaignName;
@@ -15,5 +15,6 @@ class Campaign{
         this.createdBy = createdBy;
         this.headerImg = headerImg;
         this.mainImg = mainImg;
+        this.noOfDonations = noOfDonations;
     }
 }

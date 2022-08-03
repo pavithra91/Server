@@ -35,6 +35,7 @@ const create = async (req, res, next) => {
     Campaign.id = id;
     Campaign.headerImg = "";
     Campaign.mainImg = "";
+    Campaign.noOfDonations = 0;
 
     console.log(Campaign);
 
@@ -71,7 +72,7 @@ const create = async (req, res, next) => {
 // Get All Campaigns of Specific User
 const getCampaigns = async (req, res, next) => {
   try {
-    const id = "lqblyRwIeylJjL6V8Chj";//req.body.id;
+    const id = req.body.id;
 
     const citiesRef = db.collection('Campaign');
     const snapshot = await citiesRef.where('createdBy', '==', id).get();
