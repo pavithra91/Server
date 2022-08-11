@@ -1,6 +1,6 @@
 const express = require('express');
 const {addUser, authenticate, getUser, getUserBadgeDetails, updateUserProfileImage} = require('../controller/userController');
-const { create, getCampaigns, getCampaign, getWatchlist, updateCampaignImage, getCampaignDetails, getTopFundRaisers } = require('../controller/campaignController');
+const { create, getCampaigns, getCampaign, getWatchlist, updateCampaignImage, getCampaignDetails, getTopFundRaisers, getCampaignRequests, UpdateCampaignStatus } = require('../controller/campaignController');
 const { donate } = require('../controller/paymentController');
 const { getDonationRules, updateRule, deleteRule, addRule, getDonationBadges } = require('../controller/miscController');
 
@@ -21,6 +21,8 @@ router.get('/campaign/getWatchlist', getWatchlist);
 router.post('/campaign/updateCampaignImage', updateCampaignImage);
 router.get('/campaign/getCampaignDetails', getCampaignDetails);
 router.get('/campaign/getTopFundRaisers', getTopFundRaisers);
+router.get('/campaign/getCampaignRequests', getCampaignRequests);
+router.post('/campaign/UpdateCampaignStatus', UpdateCampaignStatus);
 
 // Payments
 router.post('/payment/donate', donate);

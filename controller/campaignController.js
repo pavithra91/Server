@@ -36,6 +36,7 @@ const create = async (req, res, next) => {
     Campaign.headerImg = "";
     Campaign.mainImg = "";
     Campaign.noOfDonations = 0;
+    Campaign.shortDescription = req.body.shortDescription;
 
     console.log(Campaign);
 
@@ -187,7 +188,7 @@ const getWatchlist = async (req, res, next) => {
   }
 }
 
-
+// Update Campaign images
 const updateCampaignImage = async (req, res, next) => {
   try {
     const id = req.body.id;
@@ -314,6 +315,65 @@ const getTopFundRaisers = async (req, res, next) => {
   }
 }
 
+// Get All Campaigns Requests
+const getCampaignRequests = async (req, res, next) => {
+  try {
+
+    const citiesRef = db.collection('Campaign');
+    const snapshot = await citiesRef.where('campaignStatus', 'in', ['Request', 'Under Review']).get();
+    if (snapshot.empty) {
+      console.log('No matching documents.');
+      return;
+    }
+
+    var campaignlist = [];
+    snapshot.forEach(doc => {
+      console.log(doc.id, '=>', doc.data());
+      campaignlist.push(doc.data())
+    });
+
+    return res.status(200).json({
+      status: 'success',
+      data: campaignlist,
+      msg: 'Campaign List Found',
+    });
+
+
+
+  } catch (er) {
+    // res.status(500).json({
+    //   status: 'error',
+    //   error: er,
+    // });
+  }
+}
+
+// Update Campaign images
+const UpdateCampaignStatus = async (req, res, next) => {
+  try {
+    const id = req.body.id;
+    const reqStatus = req.body.reqStatus;
+
+    const userRef = db.collection('Campaign').doc(id);
+    const response = await userRef.update({campaignStatus: reqStatus});
+
+    console.log(response);
+
+    return res.status(200).json({
+      status: 'success',
+      msg: 'Update Sucessfully',
+    });
+  
+  } catch (er) {
+    console.log(er);
+  //   res.status(500).json({
+  //     status: 'error',
+  //     error: er,
+  //   });
+  }
+}
+
+
 module.exports = {
   create,
   getCampaign,
@@ -321,6 +381,8 @@ module.exports = {
   getWatchlist,
   updateCampaignImage,
   getCampaignDetails,
-  getTopFundRaisers
+  getTopFundRaisers,
+  getCampaignRequests,
+  UpdateCampaignStatus
 }
 
