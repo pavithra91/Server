@@ -51,6 +51,15 @@ const create = async (req, res, next) => {
         msg: 'Campaign Created Sucessfully',
       });
     });
+
+    const campaignStatusData = {
+      campaignstatus: 'Request  ',
+      approvedBy: '',
+      comment: '',
+      approvedDate: ''
+    };
+    
+    const res = await db.collection('CampaignApproval').doc(id).set(campaignStatusData);
     // if (snapshot.empty) {
     //   console.log('No matching documents.');
     //   return res.status(400).json({
@@ -353,11 +362,18 @@ const UpdateCampaignStatus = async (req, res, next) => {
   try {
     const id = req.body.id;
     const reqStatus = req.body.reqStatus;
+    const reqComment = req.body.reqComment;
 
-    const userRef = db.collection('Campaign').doc(id);
-    const response = await userRef.update({campaignStatus: reqStatus});
+    const campaignRef = db.collection('Campaign').doc(id);
+    const resCampaign = await campaignRef.update({campaignStatus: reqStatus});
 
-    console.log(response);
+    var createdDate = new Date();
+    console.log(createdDate.toISOString().slice(0, 10));
+
+   const campaignStatusRef = db.collection('CampaignApproval').doc(id);
+   const resCampaignStatus = await campaignStatusRef.update({campaignstatus: reqStatus, comment: reqComment , approvedDate: createdDate});
+
+    console.log(resCampaign);
 
     return res.status(200).json({
       status: 'success',
@@ -366,10 +382,10 @@ const UpdateCampaignStatus = async (req, res, next) => {
   
   } catch (er) {
     console.log(er);
-  //   res.status(500).json({
-  //     status: 'error',
-  //     error: er,
-  //   });
+     res.status(500).json({
+       status: 'error',
+       error: er,
+     });
   }
 }
 
