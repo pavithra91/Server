@@ -1,5 +1,6 @@
 var db = require('../config');
 const express = require('express');
+var nodemailer = require('nodemailer');
 const app = express();
 app.use(express.json());
 
@@ -153,11 +154,51 @@ const getDonationBadges = async (req, res, next) => {
     }
   }
 
+  const sendEmail = async (req, res, next) => {
+    try {
+      const id = req.body.id;
+
+      const cityRef = db.collection('User').doc(id);
+      const doc = await cityRef.get();
+
+      var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'dev.pavithraj@gmail.com',
+          pass: 'fitodvhabxkpcqqh'
+        }
+      });
+
+      var mailOptions = {
+        from: req.body.senderEmail,
+        to: doc.data().email,
+        subject: req.body.senderSubject,
+        text: req.body.senderMessage
+      };
+      
+      transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+       return res.status(200).json({
+          status: 'success',
+          msg: 'Email Send Successfully',
+        });
+      });
+
+    } catch (er) {
+        console.log(er)
+    }
+  }
+
 
 module.exports = {
     getDonationRules,
     updateRule,
     deleteRule,
     addRule,
-    getDonationBadges
+    getDonationBadges,
+    sendEmail
   }

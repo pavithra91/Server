@@ -1,6 +1,7 @@
 var db = require('../config');
 const User = require('../models/user')
 const express = require('express');
+var nodemailer = require('nodemailer');
 const app = express();
 app.use(express.json());
 
@@ -17,6 +18,32 @@ const addUser = async (req, res, next) => {
     console.log(req.body);
     return db.collection('User').doc().set(data).then(() => {
       console.log("User Added Sucessfully");
+
+      var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'dev.pavithraj@gmail.com',
+          pass: '0718659431'
+        }
+      });
+
+
+      var mailOptions = {
+        from: 'dev.pavithraj@gmail.com',
+        to: req.body.email,
+        subject: 'Sending Email using Node.js',
+        text: 'That was easy!'
+      };
+      
+      transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+
+      });
+
     });
   } catch (error) {
     res.status(500).send(error.message);
@@ -67,14 +94,14 @@ const getUser = async (req, res, next) => {
       console.log('No such document!');
       return res.status(400).json({
         status: 'error',
-        msg: 'User Authenticated Failed',
+        msg: 'No User Found',
       });
     } else {
       console.log('Document data:', doc.data());
       res.status(200).json({
         status: 'success',
         data: doc.data(),
-        msg: 'User Authenticated Sucessfully',
+        msg: 'User Found Sucessfully',
       });
     }
 

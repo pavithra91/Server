@@ -2,7 +2,7 @@ const express = require('express');
 const {addUser, authenticate, getUser, getUserBadgeDetails, updateUserProfileImage} = require('../controller/userController');
 const { create, getCampaigns, getCampaign, getWatchlist, updateCampaignImage, getCampaignDetails, getTopFundRaisers, getCampaignRequests, UpdateCampaignStatus } = require('../controller/campaignController');
 const { donate } = require('../controller/paymentController');
-const { getDonationRules, updateRule, deleteRule, addRule, getDonationBadges } = require('../controller/miscController');
+const { getDonationRules, updateRule, deleteRule, addRule, getDonationBadges, sendEmail } = require('../controller/miscController');
 
 const router = express.Router();
 
@@ -33,6 +33,7 @@ router.post('/misc/updateRule', updateRule);
 router.post('/misc/deleteRule', deleteRule);
 router.post('/misc/addRule', addRule);
 router.get('/misc/getDonationBadges', getDonationBadges);
+router.post('/misc/sendEmail', sendEmail);
 
 module.exports = {
     routes: router
