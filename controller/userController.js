@@ -177,11 +177,39 @@ const getUserBadgeDetails = async (req, res, next) => {
     }
   }
 
+  const updateUserDetails = async (req, res, next) => {
+    try {
+      const id = req.body.id;
+      const firstName = req.body.firstName;
+      const lastName = req.body.lastName;
+      const phone = req.body.phone;
+      const address = req.body.address;
+
+      console.log(req.body.id);
+      console.log(req.body.firstName);
+  
+      //const userRef = db.collection('User').doc(id);
+    //  const response = await userRef.update({firstName: firstName, lastName: lastName, phone: phone, address: address});
+  
+      return res.status(200).json({
+        status: 'success',
+        msg: 'User Profile Update Sucessfully',
+      });
+    
+    } catch (er) {
+      console.log(er);
+    //   res.status(500).json({
+    //     status: 'error',
+    //     error: er,
+    //   });
+    }
+  }
 
 module.exports = {
   addUser,
   authenticate,
   getUser,
   getUserBadgeDetails,
-  updateUserProfileImage
+  updateUserProfileImage,
+  updateUserDetails
 }

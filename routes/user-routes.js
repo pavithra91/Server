@@ -1,5 +1,5 @@
 const express = require('express');
-const {addUser, authenticate, getUser, getUserBadgeDetails, updateUserProfileImage} = require('../controller/userController');
+const {addUser, authenticate, getUser, getUserBadgeDetails, updateUserProfileImage, updateUserDetails } = require('../controller/userController');
 const { create, getCampaigns, getCampaign, getWatchlist, updateCampaignImage, getCampaignDetails, getTopFundRaisers, getCampaignRequests, UpdateCampaignStatus } = require('../controller/campaignController');
 const { donate } = require('../controller/paymentController');
 const { getDonationRules, updateRule, deleteRule, addRule, getDonationBadges, sendEmail } = require('../controller/miscController');
@@ -12,6 +12,7 @@ router.post('/user/authenticate', authenticate);
 router.post('/user/getUser', getUser);
 router.get('/user/getUserBadgeDetails', getUserBadgeDetails);
 router.post('/user/updateUserProfileImage', updateUserProfileImage);
+router.post('/user/updateUserDetails', updateUserDetails);
 
 // Campaign
 router.post('/campaign/create', create);
