@@ -188,8 +188,8 @@ const getUserBadgeDetails = async (req, res, next) => {
       console.log(req.body.id);
       console.log(req.body.firstName);
   
-      //const userRef = db.collection('User').doc(id);
-    //  const response = await userRef.update({firstName: firstName, lastName: lastName, phone: phone, address: address});
+      const userRef = db.collection('User').doc(id);
+      const response = await userRef.update({firstName: firstName, lastName: lastName, phone: phone, address: address});
   
       return res.status(200).json({
         status: 'success',
