@@ -389,6 +389,40 @@ const UpdateCampaignStatus = async (req, res, next) => {
   }
 }
 
+// Get Campaigns by Category
+const getCampaignByCategory = async (req, res, next) => {
+  try {
+    const category = req.body.category;
+    console.log(category);
+    const citiesRef = db.collection('Campaign');
+    const snapshot = await citiesRef.where('category', 'in', [category]).get();
+    if (snapshot.empty) {
+      console.log('No matching documents.');
+      return;
+    }
+
+    var campaignlist = [];
+    snapshot.forEach(doc => {
+      console.log(doc.id, '=>', doc.data());
+      campaignlist.push(doc.data())
+    });
+
+    return res.status(200).json({
+      status: 'success',
+      data: campaignlist,
+      msg: 'Campaign List Found',
+    });
+
+
+
+  } catch (er) {
+     res.status(500).json({
+       status: 'error',
+       error: er,
+     });
+  }
+}
+
 
 module.exports = {
   create,
@@ -399,6 +433,7 @@ module.exports = {
   getCampaignDetails,
   getTopFundRaisers,
   getCampaignRequests,
-  UpdateCampaignStatus
+  UpdateCampaignStatus,
+  getCampaignByCategory
 }
 
