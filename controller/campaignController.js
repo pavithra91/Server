@@ -201,15 +201,15 @@ const getWatchlist = async (req, res, next) => {
 const updateCampaignImage = async (req, res, next) => {
   try {
     const id = req.body.id;
-    const imgPath = req.body.imgPath;
+   // const imgPath = req.body.imgPath;
     const mainImgSrc = req.body.mainImgSrc;
 
     console.log(id);
-    console.log(imgPath);
+   // console.log(imgPath);
     console.log(mainImgSrc);
 
     const userRef = db.collection('Campaign').doc(id);
-    const response = await userRef.update({headerImg: imgPath, mainImg: mainImgSrc});
+    const response = await userRef.update({ mainImg: mainImgSrc});
 
     console.log(response);
 
