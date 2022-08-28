@@ -3,6 +3,8 @@ const Campaign = require('../models/campaign')
 const express = require('express');
 const app = express();
 app.use(express.json());
+const admin = require('firebase-admin');
+const fieldValue = admin.firestore.FieldValue; 
 
 
 // Create Campaign
@@ -25,7 +27,7 @@ const create = async (req, res, next) => {
     Campaign.campaignStartDate = req.body.campaignStartDate;
     Campaign.campaignEndDate = req.body.campaignEndDate;
     Campaign.campaignDescription = req.body.campaignDescription;
-    Campaign.goalAmount = req.body.goal;
+    Campaign.goalAmount = parseFloat(req.body.goal);
     Campaign.raiedAmount = 0.0;
     Campaign.city = req.body.city;
     Campaign.province = req.body.province;
@@ -40,17 +42,10 @@ const create = async (req, res, next) => {
 
     console.log(Campaign);
 
-
-
     const snapshot = await db.collection('Campaign').doc(id).set(Campaign).then(() => {
       console.log("Campaign Created Sucessfully");
-
-      return res.status(200).json({
-        status: 'Success',
-        data: id,
-        msg: 'Campaign Created Sucessfully',
-      });
     });
+
 
     const campaignStatusData = {
       campaignstatus: 'Request  ',
@@ -58,24 +53,16 @@ const create = async (req, res, next) => {
       comment: '',
       approvedDate: ''
     };
-    
-    const res = await db.collection('CampaignApproval').doc(id).set(campaignStatusData);
-    // if (snapshot.empty) {
-    //   console.log('No matching documents.');
-    //   return res.status(400).json({
-    //     status: 'error',
-    //     msg: 'User Authenticated Failed',
-    //   });
-    // }else
-    // {
-    //   return res.status(200).json({
-    //       status: 'Success',
-    //       data : "Campaign",
-    //       msg: 'Campaign Created Sucessfully',
-    //     });
-    // }
+
+    const respose = await db.collection('CampaignApproval').doc(id).set(campaignStatusData).then(() => {
+      return res.status(200).json({
+        status: 'Success',
+        data: id,
+        msg: 'Campaign Created Sucessfully',
+      });
+    });
   } catch (error) {
-    res.status(500).send(error.message);
+    return res.status(500).send(error.message);
   }
 }
 
@@ -168,25 +155,25 @@ const getWatchlist = async (req, res, next) => {
       console.log(campiagnList);
 
       const citiesRef = db.collection('Campaign');
-    const snapshot = await citiesRef.where('id', 'in', campiagnList).get();
-    if (snapshot.empty) {
-      console.log('No matching documents.');
-      return;
-    }
+      const snapshot = await citiesRef.where('id', 'in', campiagnList).get();
+      if (snapshot.empty) {
+        console.log('No matching documents.');
+        return;
+      }
 
-    var campaignlist = [];
-    snapshot.forEach(doc => {
-      campaignlist.push(doc.data())
-    });
+      var campaignlist = [];
+      snapshot.forEach(doc => {
+        campaignlist.push(doc.data())
+      });
 
 
-    res.status(200).json({
-      status: 'success',
-      data: campaignlist,
-      msg: 'Watchlist Data Found',
-    });
+      res.status(200).json({
+        status: 'success',
+        data: campaignlist,
+        msg: 'Watchlist Data Found',
+      });
 
-      
+
     }
 
   } catch (er) {
@@ -201,15 +188,14 @@ const getWatchlist = async (req, res, next) => {
 const updateCampaignImage = async (req, res, next) => {
   try {
     const id = req.body.id;
-   // const imgPath = req.body.imgPath;
     const mainImgSrc = req.body.mainImgSrc;
 
     console.log(id);
-   // console.log(imgPath);
+    // console.log(imgPath);
     console.log(mainImgSrc);
 
     const userRef = db.collection('Campaign').doc(id);
-    const response = await userRef.update({ mainImg: mainImgSrc});
+    const response = await userRef.update({ mainImg: mainImgSrc });
 
     console.log(response);
 
@@ -217,13 +203,13 @@ const updateCampaignImage = async (req, res, next) => {
       status: 'success',
       msg: 'Update Sucessfully',
     });
-  
+
   } catch (er) {
     console.log(er);
-  //   res.status(500).json({
-  //     status: 'error',
-  //     error: er,
-  //   });
+    //   res.status(500).json({
+    //     status: 'error',
+    //     error: er,
+    //   });
   }
 }
 
@@ -242,14 +228,14 @@ const getCampaignDetails = async (req, res, next) => {
     if (commentResponse.empty) {
       console.log('No matching documents for comments.');
     }
-    else{
+    else {
       commentResponse.forEach(doc => {
         console.log(doc.id, '=>', doc.data());
         _commentlist.push(doc.data())
       });
 
       _response.push(_commentlist);
-    }   
+    }
 
     const faqRef = db.collection('FAQ');
     const faqResponse = await faqRef.where('campaignId', '==', id).get();
@@ -257,7 +243,7 @@ const getCampaignDetails = async (req, res, next) => {
     if (faqResponse.empty) {
       console.log('No matching documents for FAQs.');
     }
-    else{      
+    else {
       faqResponse.forEach(doc => {
         console.log(doc.id, '=>', doc.data());
         _faqlist.push(doc.data())
@@ -271,26 +257,26 @@ const getCampaignDetails = async (req, res, next) => {
     if (updatesResponse.empty) {
       console.log('No matching documents for recent updates.');
     }
-    else{
+    else {
       faqResponse.forEach(doc => {
         console.log(doc.id, '=>', doc.data());
         _updateslist.push(doc.data());
       });
       _response.push(_updateslist);
-    }  
+    }
 
     return res.status(200).json({
       status: 'success',
       data: _response,
       msg: 'No error ouccred',
     });
-  
+
   } catch (er) {
     console.log(er);
-  //   res.status(500).json({
-  //     status: 'error',
-  //     error: er,
-  //   });
+    //   res.status(500).json({
+    //     status: 'error',
+    //     error: er,
+    //   });
   }
 }
 
@@ -314,13 +300,13 @@ const getTopFundRaisers = async (req, res, next) => {
       data: campaignlist,
       msg: 'No error ouccred',
     });
-  
+
   } catch (er) {
     console.log(er);
-  //   res.status(500).json({
-  //     status: 'error',
-  //     error: er,
-  //   });
+    //   res.status(500).json({
+    //     status: 'error',
+    //     error: er,
+    //   });
   }
 }
 
@@ -357,7 +343,7 @@ const getCampaignRequests = async (req, res, next) => {
   }
 }
 
-// Update Campaign images
+// Update Campaign Status
 const UpdateCampaignStatus = async (req, res, next) => {
   try {
     const id = req.body.id;
@@ -365,13 +351,13 @@ const UpdateCampaignStatus = async (req, res, next) => {
     const reqComment = req.body.reqComment;
 
     const campaignRef = db.collection('Campaign').doc(id);
-    const resCampaign = await campaignRef.update({campaignStatus: reqStatus});
+    const resCampaign = await campaignRef.update({ campaignStatus: reqStatus });
 
     var createdDate = new Date();
     console.log(createdDate.toISOString().slice(0, 10));
 
-   const campaignStatusRef = db.collection('CampaignApproval').doc(id);
-   const resCampaignStatus = await campaignStatusRef.update({campaignstatus: reqStatus, comment: reqComment , approvedDate: createdDate});
+    const campaignStatusRef = db.collection('CampaignApproval').doc(id);
+    const resCampaignStatus = await campaignStatusRef.update({ campaignstatus: reqStatus, comment: reqComment, approvedDate: createdDate });
 
     console.log(resCampaign);
 
@@ -379,13 +365,13 @@ const UpdateCampaignStatus = async (req, res, next) => {
       status: 'success',
       msg: 'Update Sucessfully',
     });
-  
+
   } catch (er) {
     console.log(er);
-     res.status(500).json({
-       status: 'error',
-       error: er,
-     });
+    res.status(500).json({
+      status: 'error',
+      error: er,
+    });
   }
 }
 
@@ -416,10 +402,38 @@ const getCampaignByCategory = async (req, res, next) => {
 
 
   } catch (er) {
-     res.status(500).json({
-       status: 'error',
-       error: er,
-     });
+    res.status(500).json({
+      status: 'error',
+      error: er,
+    });
+  }
+}
+
+// Update Campaign images
+const updateDocumentList = async (req, res, next) => {
+  try {
+    const id = req.body.id;
+    const docUrl = req.body.docUrl;
+
+    console.log(req.body.docUrl);
+
+    const userRef = db.collection('Campaign').doc(id);
+
+    const unionRes = await userRef.update({
+      documentList: fieldValue.arrayUnion(docUrl)
+    });
+
+    return res.status(200).json({
+      status: 'success',
+      msg: 'Update Sucessfully',
+    });
+
+  } catch (er) {
+    console.log(er);
+    //   res.status(500).json({
+    //     status: 'error',
+    //     error: er,
+    //   });
   }
 }
 
@@ -434,6 +448,7 @@ module.exports = {
   getTopFundRaisers,
   getCampaignRequests,
   UpdateCampaignStatus,
-  getCampaignByCategory
+  getCampaignByCategory,
+  updateDocumentList
 }
 
