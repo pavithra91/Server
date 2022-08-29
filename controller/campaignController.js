@@ -349,6 +349,9 @@ const UpdateCampaignStatus = async (req, res, next) => {
     const id = req.body.id;
     const reqStatus = req.body.reqStatus;
     const reqComment = req.body.reqComment;
+    const userId = req.body.userId;
+
+    console.log(userId);
 
     const campaignRef = db.collection('Campaign').doc(id);
     const resCampaign = await campaignRef.update({ campaignStatus: reqStatus });
@@ -357,7 +360,7 @@ const UpdateCampaignStatus = async (req, res, next) => {
     console.log(createdDate.toISOString().slice(0, 10));
 
     const campaignStatusRef = db.collection('CampaignApproval').doc(id);
-    const resCampaignStatus = await campaignStatusRef.update({ campaignstatus: reqStatus, comment: reqComment, approvedDate: createdDate });
+    const resCampaignStatus = await campaignStatusRef.update({ campaignstatus: reqStatus, comment: reqComment, approvedDate: createdDate.toISOString().slice(0, 10), approvedBy: userId });
 
     console.log(resCampaign);
 
