@@ -194,6 +194,7 @@ const getUserBadgeDetails = async (req, res, next) => {
     }
   }
 
+  // Update User Details
   const updateUserDetails = async (req, res, next) => {
     try {
       const id = req.body.id;
@@ -221,6 +222,71 @@ const getUserBadgeDetails = async (req, res, next) => {
     //   });
     }
   }
+
+    // Reset Password
+    const resetPassword = async (req, res, next) => {
+      try {
+        const email = req.body.email;
+  
+        console.log(req.body.email);
+    
+        const userRef = db.collection('User');
+        const snapshot = await userRef.where('email', '==', email).get();
+        
+        if (snapshot.empty) {
+          console.log('No matching documents.');
+          return res.status(400).json({
+            status: 'error',
+            msg: 'User Account not Found',
+          });
+        }
+
+        snapshot.forEach(doc => {
+          console.log(doc.id, '=>', doc.data());
+          
+
+        });
+
+        var transporter = nodemailer.createTransport({
+          host: 'smtp.gmail.com',
+          auth: {
+            user: 'dev.pavithraj@gmail.com',
+            pass: 'zaqyfidgkfttfxph'
+          }
+      });
+        
+      var mailOptions = {
+        from: 'dev.pavithraj@gmail.com',
+        to: req.body.email,
+        subject: 'Welcome to Charity',
+        html: 'Hello ' + req.body.firstName +' '+ req.body.lastName +', <br /><br /> Thank you for signing up to Charity! We \'re excited to have you onboard and will be happy to help you set everything up.  Please confirm your email ('+ req.body.email +') by clicking the button below.'
+      };
+      
+     // transporter.sendMail(mailOptions, (error, info) => {
+     //   if (error) {
+    //      return console.log(error);
+    //    }
+     //   console.log('Message sent: %s', info.messageId);
+  
+     return res.status(200).json({
+          status: 'success',
+          data: createdUser.id,
+          msg: 'User Created Sucessfully',
+        });
+    
+        return res.status(200).json({
+          status: 'success',
+          msg: 'User Profile Update Sucessfully',
+        });
+      
+      } catch (er) {
+        console.log(er);
+      //   res.status(500).json({
+      //     status: 'error',
+      //     error: er,
+      //   });
+      }
+    }
 
 module.exports = {
   addUser,
