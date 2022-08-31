@@ -1,7 +1,7 @@
 var db = require('../config');
 const User = require('../models/user')
 const express = require('express');
-var nodemailer = require('nodemailer');
+    var nodemailer = require('nodemailer');
 const app = express();
 app.use(express.json());
 
@@ -16,35 +16,52 @@ const addUser = async (req, res, next) => {
     }
     const data = req.body;
     console.log(req.body);
-    return db.collection('User').doc().set(data).then(() => {
-      console.log("User Added Sucessfully");
 
+    var createdDate = new Date();
+
+    User.firstName = req.body.firstName;
+    User.lastName = req.body.lastName;
+    User.email = req.body.email;
+    User.password = req.body.password;
+    User.nic = "";
+    User.dob = "";
+    User.phone = "";
+    User.role = req.body.role;
+    User.userStatus = "Pending";
+    User.dateCreated = createdDate;
+
+    const createdUser = await db.collection('User').add(User);
+ 
       var transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com',
         auth: {
           user: 'dev.pavithraj@gmail.com',
-          pass: '0718659431'
+          pass: 'zaqyfidgkfttfxph'
         }
-      });
-
-
-      var mailOptions = {
-        from: 'dev.pavithraj@gmail.com',
-        to: req.body.email,
-        subject: 'Sending Email using Node.js',
-        text: 'That was easy!'
-      };
-      
-      transporter.sendMail(mailOptions, function(error, info){
-        if (error) {
-          console.log(error);
-        } else {
-          console.log('Email sent: ' + info.response);
-        }
-
-      });
-
     });
+      
+    var mailOptions = {
+      from: 'dev.pavithraj@gmail.com',
+      to: req.body.email,
+      subject: 'Welcome to Charity',
+      html: 'Hello ' + req.body.firstName +' '+ req.body.lastName +', <br /><br /> Thank you for signing up to Charity! We \'re excited to have you onboard and will be happy to help you set everything up.  Please confirm your email ('+ req.body.email +') by clicking the button below.'
+    };
+    
+   // transporter.sendMail(mailOptions, (error, info) => {
+   //   if (error) {
+  //      return console.log(error);
+  //    }
+   //   console.log('Message sent: %s', info.messageId);
+
+   return res.status(200).json({
+        status: 'success',
+        data: createdUser.id,
+        msg: 'User Created Sucessfully',
+      });
+
+ //   });
+
+
   } catch (error) {
     res.status(500).send(error.message);
   }
