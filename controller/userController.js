@@ -1,7 +1,7 @@
 var db = require('../config');
 const User = require('../models/user')
 const express = require('express');
-    var nodemailer = require('nodemailer');
+var nodemailer = require('nodemailer');
 const app = express();
 app.use(express.json());
 
@@ -31,35 +31,35 @@ const addUser = async (req, res, next) => {
     User.dateCreated = createdDate;
 
     const createdUser = await db.collection('User').add(User);
- 
-      var transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        auth: {
-          user: 'dev.pavithraj@gmail.com',
-          pass: 'zaqyfidgkfttfxph'
-        }
+
+    var transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      auth: {
+        user: 'dev.pavithraj@gmail.com',
+        pass: 'zaqyfidgkfttfxph'
+      }
     });
-      
+
     var mailOptions = {
       from: 'dev.pavithraj@gmail.com',
       to: req.body.email,
       subject: 'Welcome to Charity',
-      html: 'Hello ' + req.body.firstName +' '+ req.body.lastName +', <br /><br /> Thank you for signing up to Charity! We \'re excited to have you onboard and will be happy to help you set everything up.  Please confirm your email ('+ req.body.email +') by clicking the button below.'
+      html: 'Hello ' + req.body.firstName + ' ' + req.body.lastName + ', <br /><br /> Thank you for signing up to Charity! We \'re excited to have you onboard and will be happy to help you set everything up.  Please confirm your email (' + req.body.email + ') by clicking the button below.'
     };
-    
-   // transporter.sendMail(mailOptions, (error, info) => {
-   //   if (error) {
-  //      return console.log(error);
-  //    }
-   //   console.log('Message sent: %s', info.messageId);
 
-   return res.status(200).json({
-        status: 'success',
-        data: createdUser.id,
-        msg: 'User Created Sucessfully',
-      });
+    // transporter.sendMail(mailOptions, (error, info) => {
+    //   if (error) {
+    //      return console.log(error);
+    //    }
+    //   console.log('Message sent: %s', info.messageId);
 
- //   });
+    return res.status(200).json({
+      status: 'success',
+      data: createdUser.id,
+      msg: 'User Created Sucessfully',
+    });
+
+    //   });
 
 
   } catch (error) {
@@ -146,12 +146,12 @@ const getUserBadgeDetails = async (req, res, next) => {
     var badge = []
 
     snapshot.data().badge.forEach(element => {
-    badge.push(element)
+      badge.push(element)
     });
 
     const badgesRef = db.collection('Badges');
     const badgelist = await badgesRef.get();
-    
+
     var respose = [];
     badgelist.forEach(doc => {
       respose.push(doc.data())
@@ -172,121 +172,117 @@ const getUserBadgeDetails = async (req, res, next) => {
   }
 }
 
-  const updateUserProfileImage = async (req, res, next) => {
-    try {
-      const id = req.body.id;
-      const imgPath = req.body.imgPath;
-  
-      const userRef = db.collection('User').doc(id);
-      const response = await userRef.update({profileImg: imgPath});
-  
-      return res.status(200).json({
-        status: 'success',
-        msg: 'Update Sucessfully',
-      });
-    
-    } catch (er) {
-      console.log(er);
+const updateUserProfileImage = async (req, res, next) => {
+  try {
+    const id = req.body.id;
+    const imgPath = req.body.imgPath;
+
+    const userRef = db.collection('User').doc(id);
+    const response = await userRef.update({ profileImg: imgPath });
+
+    return res.status(200).json({
+      status: 'success',
+      msg: 'Update Sucessfully',
+    });
+
+  } catch (er) {
+    console.log(er);
     //   res.status(500).json({
     //     status: 'error',
     //     error: er,
     //   });
-    }
   }
+}
 
-  // Update User Details
-  const updateUserDetails = async (req, res, next) => {
-    try {
-      const id = req.body.id;
-      const firstName = req.body.firstName;
-      const lastName = req.body.lastName;
-      const phone = req.body.phone;
-      const address = req.body.address;
+// Update User Details
+const updateUserDetails = async (req, res, next) => {
+  try {
+    const id = req.body.id;
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    const phone = req.body.phone;
+    const address = req.body.address;
 
-      console.log(req.body.id);
-      console.log(req.body.firstName);
-  
-      const userRef = db.collection('User').doc(id);
-      const response = await userRef.update({firstName: firstName, lastName: lastName, phone: phone, address: address});
-  
-      return res.status(200).json({
-        status: 'success',
-        msg: 'User Profile Update Sucessfully',
-      });
-    
-    } catch (er) {
-      console.log(er);
+    console.log(req.body.id);
+    console.log(req.body.firstName);
+
+    const userRef = db.collection('User').doc(id);
+    const response = await userRef.update({ firstName: firstName, lastName: lastName, phone: phone, address: address });
+
+    return res.status(200).json({
+      status: 'success',
+      msg: 'User Profile Update Sucessfully',
+    });
+
+  } catch (er) {
+    console.log(er);
     //   res.status(500).json({
     //     status: 'error',
     //     error: er,
     //   });
-    }
   }
+}
 
-    // Reset Password
-    const resetPassword = async (req, res, next) => {
-      try {
-        const email = req.body.email;
-  
-        console.log(req.body.email);
-    
-        const userRef = db.collection('User');
-        const snapshot = await userRef.where('email', '==', email).get();
-        
-        if (snapshot.empty) {
-          console.log('No matching documents.');
-          return res.status(400).json({
-            status: 'error',
-            msg: 'User Account not Found',
-          });
+// Reset Password
+const resetPassword = async (req, res, next) => {
+  try {
+    const email = req.body.email;
+
+    console.log(req.body.email);
+
+    const userRef = db.collection('User');
+    const snapshot = await userRef.where('email', '==', email).get();
+
+    if (snapshot.empty) {
+      console.log('No matching documents.');
+      return res.status(400).json({
+        status: 'error',
+        msg: 'User Account not Found',
+      });
+    }
+
+    snapshot.forEach(doc => {
+      console.log(doc.id, '=>', doc.data());
+
+      console.log(doc.id);
+
+      var transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        auth: {
+          user: 'dev.pavithraj@gmail.com',
+          pass: 'zaqyfidgkfttfxph'
         }
-
-        snapshot.forEach(doc => {
-          console.log(doc.id, '=>', doc.data());
-          
-
-        });
-
-        var transporter = nodemailer.createTransport({
-          host: 'smtp.gmail.com',
-          auth: {
-            user: 'dev.pavithraj@gmail.com',
-            pass: 'zaqyfidgkfttfxph'
-          }
       });
-        
+
       var mailOptions = {
         from: 'dev.pavithraj@gmail.com',
         to: req.body.email,
-        subject: 'Welcome to Charity',
-        html: 'Hello ' + req.body.firstName +' '+ req.body.lastName +', <br /><br /> Thank you for signing up to Charity! We \'re excited to have you onboard and will be happy to help you set everything up.  Please confirm your email ('+ req.body.email +') by clicking the button below.'
+        subject: 'Charity Account Password Reset',
+        html: '<p><strong>Hello '+ doc.firstName +', <br /> </strong></p><p>&nbsp;</p><p>You can reset your account password by clicking below link</p><br /> <p><a href="http://localhost:8080/SignUp" target="_blank">Reset Password</a></p><p>&nbsp;</p><br /> <p>Thanks and Regards,</p><p>Charity Team</p>'
       };
-      
-     // transporter.sendMail(mailOptions, (error, info) => {
-     //   if (error) {
-    //      return console.log(error);
-    //    }
-     //   console.log('Message sent: %s', info.messageId);
-  
-     return res.status(200).json({
-          status: 'success',
-          data: createdUser.id,
-          msg: 'User Created Sucessfully',
-        });
-    
-        return res.status(200).json({
-          status: 'success',
-          msg: 'User Profile Update Sucessfully',
-        });
-      
-      } catch (er) {
-        console.log(er);
-      //   res.status(500).json({
-      //     status: 'error',
-      //     error: er,
-      //   });
-      }
-    }
+
+       transporter.sendMail(mailOptions, (error, info) => {
+         if (error) {
+            return console.log(error);
+          }
+         console.log('Message sent: %s', info.messageId);
+
+      return res.status(200).json({
+        status: 'success',
+        data: "",
+        msg: 'User Created Sucessfully',
+      });
+    });
+  });
+
+  } catch (er) {
+    console.log(er);
+    //   res.status(500).json({
+    //     status: 'error',
+    //     error: er,
+    //   });
+  }
+}
 
 module.exports = {
   addUser,
@@ -294,5 +290,6 @@ module.exports = {
   getUser,
   getUserBadgeDetails,
   updateUserProfileImage,
-  updateUserDetails
+  updateUserDetails,
+  resetPassword
 }
