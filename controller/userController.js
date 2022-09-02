@@ -224,7 +224,7 @@ const updateUserDetails = async (req, res, next) => {
 }
 
 // Reset Password
-const resetPassword = async (req, res, next) => {
+const resetPasswordSendLink = async (req, res, next) => {
   try {
     const email = req.body.email;
 
@@ -258,7 +258,7 @@ const resetPassword = async (req, res, next) => {
         from: 'dev.pavithraj@gmail.com',
         to: req.body.email,
         subject: 'Charity Account Password Reset',
-        html: '<p><strong>Hello '+ doc.firstName +', <br /> </strong></p><p>&nbsp;</p><p>You can reset your account password by clicking below link</p><br /> <p><a href="http://localhost:8080/SignUp" target="_blank">Reset Password</a></p><p>&nbsp;</p><br /> <p>Thanks and Regards,</p><p>Charity Team</p>'
+        html: '<p><strong>Hello '+ doc.firstName +', <br /> </strong></p><p>&nbsp;</p><p>You can reset your account password by clicking below link</p><br /> <p><a href="http://localhost:8080/ResetPasswrod/'+ doc.id +'" target="_blank">Reset Password</a></p><p>&nbsp;</p><br /> <p>Thanks and Regards,</p><p>Charity Team</p>'
       };
 
        transporter.sendMail(mailOptions, (error, info) => {
@@ -284,6 +284,32 @@ const resetPassword = async (req, res, next) => {
   }
 }
 
+// Update User Details
+const resetPassword = async (req, res, next) => {
+  try {
+    const id = req.body.id;
+    const password = req.body.password;
+
+    console.log(req.body.id);
+    console.log(req.body.password);
+
+    const userRef = db.collection('User').doc(id);
+    const response = await userRef.update({ password: password });
+
+    return res.status(200).json({
+      status: 'success',
+      msg: 'Password Updated',
+    });
+
+  } catch (er) {
+    console.log(er);
+    //   res.status(500).json({
+    //     status: 'error',
+    //     error: er,
+    //   });
+  }
+}
+
 module.exports = {
   addUser,
   authenticate,
@@ -291,5 +317,6 @@ module.exports = {
   getUserBadgeDetails,
   updateUserProfileImage,
   updateUserDetails,
+  resetPasswordSendLink,
   resetPassword
 }

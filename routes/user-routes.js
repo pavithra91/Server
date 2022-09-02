@@ -1,5 +1,5 @@
 const express = require('express');
-const {addUser, authenticate, getUser, getUserBadgeDetails, updateUserProfileImage, updateUserDetails, resetPassword } = require('../controller/userController');
+const {addUser, authenticate, getUser, getUserBadgeDetails, updateUserProfileImage, updateUserDetails, resetPasswordSendLink, resetPassword } = require('../controller/userController');
 const { create, getCampaigns, getCampaign, getWatchlist, updateCampaignImage, getCampaignDetails, getTopFundRaisers, getCampaignRequests, UpdateCampaignStatus, getCampaignByCategory, updateDocumentList } = require('../controller/campaignController');
 const { donate } = require('../controller/paymentController');
 const { getDonationRules, updateRule, deleteRule, addRule, getDonationBadges, sendEmail } = require('../controller/miscController');
@@ -13,6 +13,7 @@ router.post('/user/getUser', getUser);
 router.get('/user/getUserBadgeDetails', getUserBadgeDetails);
 router.post('/user/updateUserProfileImage', updateUserProfileImage);
 router.post('/user/updateUserDetails', updateUserDetails);
+router.post('/user/resetPasswordSendLink', resetPasswordSendLink);
 router.post('/user/resetPassword', resetPassword);
 
 // Campaign
