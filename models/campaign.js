@@ -17,5 +17,6 @@ class Campaign{
         this.mainImg = mainImg;
         this.noOfDonations = noOfDonations;
         this.shortDescription = shortDescription;
+        this.topFundraiser = false;
     }
 }

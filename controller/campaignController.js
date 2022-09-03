@@ -138,7 +138,7 @@ const getCampaign = async (req, res, next) => {
 // Get Watchlist of Specific User
 const getWatchlist = async (req, res, next) => {
   try {
-    const id = "zqMs0nNbj9bv7hu51eFd";//req.body.id;
+    const id = req.body.id;
 
     const cityRef = db.collection('Watchlist').doc(id);
     const doc = await cityRef.get();
@@ -282,8 +282,9 @@ const getCampaignDetails = async (req, res, next) => {
 
 const getTopFundRaisers = async (req, res, next) => {
   try {
-    const campaignRef = db.collection('Top-Fundraiser-Campaigns');
-    const snapshot = await campaignRef.get();
+    
+    const citiesRef = db.collection('Campaign');
+    const snapshot = await citiesRef.where('topFundraiser', '==', true).get();
     if (snapshot.empty) {
       console.log('No matching documents.');
       return;
@@ -298,7 +299,7 @@ const getTopFundRaisers = async (req, res, next) => {
     return res.status(200).json({
       status: 'success',
       data: campaignlist,
-      msg: 'No error ouccred',
+      msg: 'Campaign List Found',
     });
 
   } catch (er) {
