@@ -134,7 +134,6 @@ const getUser = async (req, res, next) => {
 const getUserBadgeDetails = async (req, res, next) => {
   try {
     const id = 'lqblyRwIeylJjL6V8Chj';//req.body.id;
-    const dlevel = "Contribution Level 1"; //req.body.dlevel;
 
     const citiesRef = db.collection('Donation-Badges').doc(id);
     const snapshot = await citiesRef.get();
@@ -202,12 +201,13 @@ const updateUserDetails = async (req, res, next) => {
     const lastName = req.body.lastName;
     const phone = req.body.phone;
     const address = req.body.address;
+    const city = req.body.city;
 
     console.log(req.body.id);
     console.log(req.body.firstName);
 
     const userRef = db.collection('User').doc(id);
-    const response = await userRef.update({ firstName: firstName, lastName: lastName, phone: phone, address: address });
+    const response = await userRef.update({ firstName: firstName, lastName: lastName, phone: phone, address: address, city: city });
 
     return res.status(200).json({
       status: 'success',

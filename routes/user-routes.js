@@ -20,7 +20,7 @@ router.post('/user/resetPassword', resetPassword);
 router.post('/campaign/create', create);
 router.post('/campaign/getCampaigns', getCampaigns);
 router.get('/campaign/getCampaign', getCampaign);
-router.get('/campaign/getWatchlist', getWatchlist);
+router.post('/campaign/getWatchlist', getWatchlist);
 router.post('/campaign/updateCampaignImage', updateCampaignImage);
 router.get('/campaign/getCampaignDetails', getCampaignDetails);
 router.get('/campaign/getTopFundRaisers', getTopFundRaisers);

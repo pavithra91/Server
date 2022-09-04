@@ -139,6 +139,7 @@ const getCampaign = async (req, res, next) => {
 const getWatchlist = async (req, res, next) => {
   try {
     const id = req.body.id;
+    console.log(id);
 
     const cityRef = db.collection('Watchlist').doc(id);
     const doc = await cityRef.get();
@@ -146,7 +147,7 @@ const getWatchlist = async (req, res, next) => {
       console.log('No such document!');
       return res.status(400).json({
         status: 'error',
-        msg: 'User Authenticated Failed',
+        msg: 'No watchlist found',
       });
     } else {
       console.log('Document data:', doc.data());

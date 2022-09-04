@@ -12,5 +12,6 @@ class User{
         this.role = role;
         this.userStatus = userStatus;
         this.dateCreated = dateCreated;
+        this.city = "";
     }
 }
