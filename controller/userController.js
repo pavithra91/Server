@@ -29,6 +29,11 @@ const addUser = async (req, res, next) => {
     User.role = req.body.role;
     User.userStatus = "Pending";
     User.dateCreated = createdDate;
+    User.city = "";
+    User.address = "";
+    User.donationLevel = "";
+    User.donationPoints = 0;
+    User.profileImg = "";
 
     const createdUser = await db.collection('User').add(User);
 
@@ -133,7 +138,7 @@ const getUser = async (req, res, next) => {
 // Get Badges of Specific User
 const getUserBadgeDetails = async (req, res, next) => {
   try {
-    const id = 'lqblyRwIeylJjL6V8Chj';//req.body.id;
+    const id = req.query.id;
 
     const citiesRef = db.collection('Donation-Badges').doc(id);
     const snapshot = await citiesRef.get();

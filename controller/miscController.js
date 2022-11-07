@@ -4,6 +4,8 @@ var nodemailer = require('nodemailer');
 const app = express();
 app.use(express.json());
 
+const admin = require('firebase-admin');
+
 
 // Get Donation Rules
 const getDonationRules = async (req, res, next) => {
@@ -154,6 +156,7 @@ const getDonationBadges = async (req, res, next) => {
     }
   }
 
+  // Send Email
   const sendEmail = async (req, res, next) => {
     try {
       const id = req.body.id;
@@ -193,6 +196,65 @@ const getDonationBadges = async (req, res, next) => {
     }
   }
 
+    // Get User Chat
+const getUserChat = async (req, res, next) => {
+  try {
+
+      const id = req.body.id;
+      console.log(id);
+
+      const cityRef = db.collection('Chat').doc(id);
+      const doc = await cityRef.get();
+      
+      var chatList = []
+      doc.data()["message"].forEach(items =>{  
+        chatList.push(items);
+     })
+
+     return  res.status(200).json({
+          status: 'success',
+          data: chatList,
+          msg: 'User Chat found',
+        });   
+  } catch (er) {
+    // res.status(500).json({
+    //   status: 'error',
+    //   error: er,
+    // });
+  }
+}
+
+    // Send Chat message
+    const sendChatMessage = async (req, res, next) => {
+     // try {
+    
+          const id = req.body.id;
+          const sender = req.body.sender;
+          const message = req.body.msg;
+    
+          const cityRef = db.collection('Chat').doc(id);
+
+          var createdDate = new Date();
+
+         const unionRes = await cityRef.update({
+          message: admin.firestore.FieldValue.arrayUnion({msg: message, sendTime:  createdDate, sender: sender})
+        });
+          
+    
+         return  res.status(200).json({
+              status: 'success',
+              data: "",
+              msg: 'User Chat found',
+            });   
+   //   } catch (er) {
+  //       res.status(500).json({
+  //         status: 'error',
+  //         error: er,
+  //       });
+ //     }
+    }
+    
+
 
 module.exports = {
     getDonationRules,
@@ -200,5 +262,7 @@ module.exports = {
     deleteRule,
     addRule,
     getDonationBadges,
-    sendEmail
+    sendEmail,
+    getUserChat,
+    sendChatMessage
   }

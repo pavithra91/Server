@@ -111,8 +111,6 @@ const donate = async (req, res, next) => {
       console.log("else");
     }
 
-
-
     return res.status(200).json({
       status: 'Success',
        data: updateresponse,
