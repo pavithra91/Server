@@ -1,5 +1,5 @@
 const express = require('express');
-const {addUser, authenticate, getUser, getUserBadgeDetails, updateUserProfileImage, updateUserDetails, resetPasswordSendLink, resetPassword } = require('../controller/userController');
+const {addUser, authenticate, getUser, getUserBadgeDetails, updateUserProfileImage, updateUserDetails, resetPasswordSendLink, resetPassword, getAllUsers } = require('../controller/userController');
 const { create, getCampaigns, getCampaign, getWatchlist, updateCampaignImage, getCampaignDetails, getTopFundRaisers, getCampaignRequests, UpdateCampaignStatus, getCampaignByCategory, updateDocumentList } = require('../controller/campaignController');
 const { donate, getAllPaymentDetails } = require('../controller/paymentController');
 const { getDonationRules, updateRule, deleteRule, addRule, getDonationBadges, sendEmail, getUserChat, sendChatMessage } = require('../controller/miscController');
@@ -15,6 +15,7 @@ router.post('/user/updateUserProfileImage', updateUserProfileImage);
 router.post('/user/updateUserDetails', updateUserDetails);
 router.post('/user/resetPasswordSendLink', resetPasswordSendLink);
 router.post('/user/resetPassword', resetPassword);
+router.post('/user/getAllUsers', getAllUsers);
 
 // Campaign
 router.post('/campaign/create', create);

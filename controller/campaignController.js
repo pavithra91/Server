@@ -317,15 +317,15 @@ const getCampaignRequests = async (req, res, next) => {
   try {
     let status = req.query.status;
 
-    const citiesRef = db.collection('Campaign');
+    const campaignRequestRef = db.collection('Campaign');
     let snapshot = null;
     if(status == "All")
     {
-      snapshot = await citiesRef.where('campaignStatus', 'in', ['Approved', 'Request', 'Under Review', 'Rejected']).get();  
+      snapshot = await campaignRequestRef.where('campaignStatus', 'in', ['Approved', 'Request', 'Under Review', 'Rejected']).get();  
     }
     else
     {
-      snapshot = await citiesRef.where('campaignStatus', 'in', [status]).get();
+      snapshot = await campaignRequestRef.where('campaignStatus', 'in', [status]).get();
     }
 
     if (snapshot.empty) {

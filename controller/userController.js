@@ -315,6 +315,48 @@ const resetPassword = async (req, res, next) => {
   }
 }
 
+// Get All Users
+const getAllUsers = async (req, res, next) => {
+  try {
+    let _UserRole = req.body.role;
+    let _UserStatus = req.body.status;
+
+    const userRef = db.collection('User');
+    let snapshot = null;
+    if(_UserRole == "All")
+    {
+      snapshot = await userRef.where('role', 'in', ['Donor', 'Campaign Manager', 'Administrator', 'Staff']).get();  
+    }
+    else
+    {
+      snapshot = await userRef.where('role', 'in', [_UserRole]).get();
+    }
+
+    if (snapshot.empty) {
+      console.log('No matching documents.');
+      return;
+    }
+
+    var _userlist = [];
+    snapshot.forEach(doc => {
+      console.log(doc.id, '=>', doc.data());
+      _userlist.push(doc.data())
+    });
+
+    return res.status(200).json({
+      status: 'success',
+      data: _userlist,
+      msg: 'User List Found',
+    });
+    
+  } catch (er) {
+     res.status(500).json({
+       status: 'error',
+       error: er,
+     });
+  }
+}
+
 module.exports = {
   addUser,
   authenticate,
@@ -323,5 +365,6 @@ module.exports = {
   updateUserProfileImage,
   updateUserDetails,
   resetPasswordSendLink,
-  resetPassword
+  resetPassword,
+  getAllUsers
 }

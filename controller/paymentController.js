@@ -113,35 +113,42 @@ const donate = async (req, res, next) => {
 
     return res.status(200).json({
       status: 'Success',
-       data: updateresponse,
+      data: updateresponse,
       msg: 'Donation Added Sucessfully',
     });
 
   } catch (error) {
+    return res.status(500).send(error.message);
   }
 }
 
 // Get All Payment Details
 const getAllPaymentDetails = async (req, res, next) => {
-  // try {
-     let date = req.query.status;
- 
+  try {
 
-    const paymentRef = db.collection('Donation');
-    paymentRef.where('dateCreated', '==', 'CO').where('dateCreated', '==', 'Denver'); 
-    const commentResponse = await commentRef.where('campaignId', '==', id).get();
 
-     var campaignlist = [];
-     snapshot.forEach(doc => {
-       console.log(doc.id, '=>', doc.data());
-       campaignlist.push(doc.data())
-     });
- 
-     return res.status(200).json({
-       status: 'success',
-       data: campaignlist,
-       msg: 'Campaign List Found',
-     });
+    let fromDate = new Date(req.body.fromDate);
+    let toDate = new Date(req.body.toDate);
+
+
+    const paymentRef = db.collection('Donations');
+    const PaymentResponse = await paymentRef.where('dateCreated', '>=', fromDate).where('dateCreated', '<=', toDate).get();
+
+    var Paymentlist = [];
+    PaymentResponse.forEach(doc => {
+      console.log(doc.id, '=>', doc.data());
+      Paymentlist.push(doc.data())
+    });
+
+    return res.status(200).json({
+      status: 'success',
+      data: Paymentlist,
+      msg: 'Payment List Found',
+    });
+  }
+  catch (error) {
+    return res.status(500).send(error.message);
+  }
 }
 
 module.exports = {
