@@ -121,7 +121,30 @@ const donate = async (req, res, next) => {
   }
 }
 
+// Get All Payment Details
+const getAllPaymentDetails = async (req, res, next) => {
+  // try {
+     let date = req.query.status;
+ 
+
+    const paymentRef = db.collection('Donation');
+    paymentRef.where('dateCreated', '==', 'CO').where('dateCreated', '==', 'Denver'); 
+    const commentResponse = await commentRef.where('campaignId', '==', id).get();
+
+     var campaignlist = [];
+     snapshot.forEach(doc => {
+       console.log(doc.id, '=>', doc.data());
+       campaignlist.push(doc.data())
+     });
+ 
+     return res.status(200).json({
+       status: 'success',
+       data: campaignlist,
+       msg: 'Campaign List Found',
+     });
+}
 
 module.exports = {
-  donate
+  donate,
+  getAllPaymentDetails
 }

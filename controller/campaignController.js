@@ -315,9 +315,19 @@ const getTopFundRaisers = async (req, res, next) => {
 // Get All Campaigns Requests
 const getCampaignRequests = async (req, res, next) => {
   try {
+    let status = req.query.status;
 
     const citiesRef = db.collection('Campaign');
-    const snapshot = await citiesRef.where('campaignStatus', 'in', ['Request', 'Under Review']).get();
+    let snapshot = null;
+    if(status == "All")
+    {
+      snapshot = await citiesRef.where('campaignStatus', 'in', ['Approved', 'Request', 'Under Review', 'Rejected']).get();  
+    }
+    else
+    {
+      snapshot = await citiesRef.where('campaignStatus', 'in', [status]).get();
+    }
+
     if (snapshot.empty) {
       console.log('No matching documents.');
       return;
@@ -334,14 +344,12 @@ const getCampaignRequests = async (req, res, next) => {
       data: campaignlist,
       msg: 'Campaign List Found',
     });
-
-
-
+    
   } catch (er) {
-    // res.status(500).json({
-    //   status: 'error',
-    //   error: er,
-    // });
+     res.status(500).json({
+       status: 'error',
+       error: er,
+     });
   }
 }
 
