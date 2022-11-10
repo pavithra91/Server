@@ -328,12 +328,16 @@ const getCampaignRequests = async (req, res, next) => {
       snapshot = await campaignRequestRef.where('campaignStatus', 'in', [status]).get();
     }
 
+    var campaignlist = [];
+
     if (snapshot.empty) {
-      console.log('No matching documents.');
-      return;
+      return res.status(200).json({
+        status: 'success',
+        data: campaignlist,
+        msg: 'Campaign List Not Found',
+      });
     }
 
-    var campaignlist = [];
     snapshot.forEach(doc => {
       console.log(doc.id, '=>', doc.data());
       campaignlist.push(doc.data())
@@ -344,7 +348,7 @@ const getCampaignRequests = async (req, res, next) => {
       data: campaignlist,
       msg: 'Campaign List Found',
     });
-    
+
   } catch (er) {
      res.status(500).json({
        status: 'error',
@@ -450,6 +454,54 @@ const updateDocumentList = async (req, res, next) => {
   }
 }
 
+// Get All Campaign List
+const getAllCampaigns = async (req, res, next) => {
+  try {
+    let _campaignStatus = req.body.status;
+    let fromDate = new Date(req.body.fromDate);
+    let toDate = new Date(req.body.toDate);
+
+    console.log(fromDate);
+
+    const campaignRequestRef = db.collection('Campaign');
+    let snapshot = null;
+    if(_campaignStatus == "All")
+    {
+      snapshot = await campaignRequestRef.where('dateCreated', '>=', fromDate).where('dateCreated', '<=', toDate).get();  
+    }
+    else
+    {
+      snapshot = await campaignRequestRef.where('campaignStatus', 'in', [_campaignStatus]).where('dateCreated', '>=', fromDate).where('dateCreated', '<=', toDate).get();
+    }
+    
+    var campaignlist = [];
+    if (snapshot.empty) {
+      return res.status(200).json({
+        status: 'success',
+        data: campaignlist,
+        msg: 'User List Not Found',
+      });
+    }
+
+    snapshot.forEach(doc => {
+      console.log(doc.id, '=>', doc.data());
+      campaignlist.push(doc.data())
+    });
+
+    return res.status(200).json({
+      status: 'success',
+      data: campaignlist,
+      msg: 'Campaign List Found',
+    });
+  } catch (er) {
+    console.log(er);
+    //   res.status(500).json({
+    //     status: 'error',
+    //     error: er,
+    //   });
+  }
+}
+
 
 module.exports = {
   create,
@@ -462,6 +514,7 @@ module.exports = {
   getCampaignRequests,
   UpdateCampaignStatus,
   getCampaignByCategory,
-  updateDocumentList
+  updateDocumentList,
+  getAllCampaigns
 }
 

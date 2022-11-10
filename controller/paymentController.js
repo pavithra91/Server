@@ -125,11 +125,11 @@ const donate = async (req, res, next) => {
 // Get All Payment Details
 const getAllPaymentDetails = async (req, res, next) => {
   try {
-
-
     let fromDate = new Date(req.body.fromDate);
     let toDate = new Date(req.body.toDate);
 
+    console.log(req.body.fromDate);
+    console.log(fromDate);
 
     const paymentRef = db.collection('Donations');
     const PaymentResponse = await paymentRef.where('dateCreated', '>=', fromDate).where('dateCreated', '<=', toDate).get();

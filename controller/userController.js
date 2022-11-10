@@ -321,23 +321,42 @@ const getAllUsers = async (req, res, next) => {
     let _UserRole = req.body.role;
     let _UserStatus = req.body.status;
 
+    console.log(_UserRole);
+    console.log(_UserStatus);
+
     const userRef = db.collection('User');
     let snapshot = null;
+
     if(_UserRole == "All")
-    {
-      snapshot = await userRef.where('role', 'in', ['Donor', 'Campaign Manager', 'Administrator', 'Staff']).get();  
+    {  
+      if(_UserStatus == "All"){
+        snapshot = await userRef.get(); 
+      }
+      else{
+        snapshot = await userRef.where('role', 'in', ['Donor', 'Campaign Manager', 'Administrator', 'Staff']).where('userStatus', '==', _UserStatus).get();
+      }
     }
     else
     {
-      snapshot = await userRef.where('role', 'in', [_UserRole]).get();
-    }
-
-    if (snapshot.empty) {
-      console.log('No matching documents.');
-      return;
+      if(_UserStatus == "All"){
+        snapshot = await userRef.where('role', '==', _UserRole).where('userStatus', 'in', ['Active', 'Block']).get();
+      }
+      else{
+        console.log("Else Part")
+        snapshot = await userRef.where('role', '==', _UserRole).where('userStatus', '==', _UserStatus).get();
+      }
     }
 
     var _userlist = [];
+    
+    if (snapshot.empty) {
+      return res.status(200).json({
+        status: 'success',
+        data: _userlist,
+        msg: 'User List Not Found',
+      });
+    }
+
     snapshot.forEach(doc => {
       console.log(doc.id, '=>', doc.data());
       _userlist.push(doc.data())
