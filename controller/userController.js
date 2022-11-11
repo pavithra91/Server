@@ -15,7 +15,17 @@ const addUser = async (req, res, next) => {
       });
     }
     const data = req.body;
-    console.log(req.body);
+    
+    const userRef = db.collection('User');
+    const snapshot = await userRef.where('email', '==', email).get();
+
+    debugger;
+    if (!snapshot.empty) {
+      return res.status(400).json({
+        status: 'error',
+        msg: 'Email already exists',
+      });
+    }
 
     var createdDate = new Date();
 
@@ -80,6 +90,7 @@ const authenticate = async (req, res, next) => {
 
     const userRef = db.collection('User');
     const snapshot = await userRef.where('email', '==', email).where('password', '==', password).get();
+
     if (snapshot.empty) {
       console.log('No matching documents.');
       return res.status(400).json({
@@ -119,7 +130,7 @@ const getUser = async (req, res, next) => {
         msg: 'No User Found',
       });
     } else {
-      console.log('Document data:', doc.data());
+     // console.log('Document data:', doc.data());
       res.status(200).json({
         status: 'success',
         data: doc.data(),
@@ -128,10 +139,10 @@ const getUser = async (req, res, next) => {
     }
 
   } catch (er) {
-    // res.status(500).json({
-    //   status: 'error',
-    //   error: er,
-    // });
+     res.status(500).json({
+       status: 'error',
+       error: er,
+     });
   }
 }
 
@@ -168,11 +179,10 @@ const getUserBadgeDetails = async (req, res, next) => {
     });
 
   } catch (er) {
-    console.log(er);
-    // res.status(500).json({
-    //   status: 'error',
-    //   error: er,
-    // });
+     res.status(500).json({
+       status: 'error',
+       error: er,
+     });
   }
 }
 
@@ -342,16 +352,15 @@ const getAllUsers = async (req, res, next) => {
         snapshot = await userRef.where('role', '==', _UserRole).where('userStatus', 'in', ['Active', 'Block']).get();
       }
       else{
-        console.log("Else Part")
         snapshot = await userRef.where('role', '==', _UserRole).where('userStatus', '==', _UserStatus).get();
       }
     }
 
     var _userlist = [];
-    
+
     if (snapshot.empty) {
       return res.status(200).json({
-        status: 'success',
+        status: 'not found',
         data: _userlist,
         msg: 'User List Not Found',
       });

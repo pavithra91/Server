@@ -73,9 +73,13 @@ const getCampaigns = async (req, res, next) => {
 
     const citiesRef = db.collection('Campaign');
     const snapshot = await citiesRef.where('createdBy', '==', id).get();
+
     if (snapshot.empty) {
       console.log('No matching documents.');
-      return;
+      return res.status(400).json({
+        status: 'error',
+        msg: 'No Campaign found',
+      });
     }
 
     var campaignlist = [];
@@ -93,10 +97,10 @@ const getCampaigns = async (req, res, next) => {
 
 
   } catch (er) {
-    // res.status(500).json({
-    //   status: 'error',
-    //   error: er,
-    // });
+     res.status(500).json({
+       status: 'error',
+       error: er,
+     });
   }
 }
 
@@ -178,10 +182,10 @@ const getWatchlist = async (req, res, next) => {
     }
 
   } catch (er) {
-    // res.status(500).json({
-    //   status: 'error',
-    //   error: er,
-    // });
+     res.status(500).json({
+       status: 'error',
+       error: er,
+     });
   }
 }
 
