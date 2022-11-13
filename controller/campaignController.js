@@ -109,8 +109,6 @@ const getCampaign = async (req, res, next) => {
   try {
     let id = req.query.id;
 
-    console.log("Request Received");
-
     const cityRef = db.collection('Campaign').doc(id);
     const doc = await cityRef.get();
 
@@ -232,10 +230,11 @@ const getCampaignDetails = async (req, res, next) => {
 
     if (commentResponse.empty) {
       console.log('No matching documents for comments.');
+      _response.push(_commentlist);
     }
     else {
       commentResponse.forEach(doc => {
-        console.log(doc.id, '=>', doc.data());
+       // console.log(doc.id, '=>', doc.data());
         _commentlist.push(doc.data())
       });
 
@@ -247,10 +246,11 @@ const getCampaignDetails = async (req, res, next) => {
 
     if (faqResponse.empty) {
       console.log('No matching documents for FAQs.');
+      _response.push(_faqlist);
     }
     else {
       faqResponse.forEach(doc => {
-        console.log(doc.id, '=>', doc.data());
+       // console.log(doc.id, '=>', doc.data());
         _faqlist.push(doc.data())
       });
       _response.push(_faqlist);
@@ -261,14 +261,17 @@ const getCampaignDetails = async (req, res, next) => {
 
     if (updatesResponse.empty) {
       console.log('No matching documents for recent updates.');
+      _response.push(_updateslist);
     }
     else {
-      faqResponse.forEach(doc => {
-        console.log(doc.id, '=>', doc.data());
+      updatesResponse.forEach(doc => {
+    //    console.log(doc.id, '=>', doc.data());
         _updateslist.push(doc.data());
       });
       _response.push(_updateslist);
     }
+
+    console.log(_response);
 
     return res.status(200).json({
       status: 'success',

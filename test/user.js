@@ -239,7 +239,7 @@ describe('User API', () => {
             .post("/api/user/addUser")
             .send(id)
             .end((err, response)=>{
-                response.should.have.status(500);
+                response.should.have.status(400);
                 response.body.should.be.a('object');
                done();
             })

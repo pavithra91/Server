@@ -17,13 +17,13 @@ const addUser = async (req, res, next) => {
     const data = req.body;
     
     const userRef = db.collection('User');
-    const snapshot = await userRef.where('email', '==', email).get();
+    const snapshot = await userRef.where('email', '==', req.body.email).get();
 
     debugger;
     if (!snapshot.empty) {
       return res.status(400).json({
         status: 'error',
-        msg: 'Email already exists',
+        msg: 'Email Already exists',
       });
     }
 
@@ -102,9 +102,11 @@ const authenticate = async (req, res, next) => {
     snapshot.forEach(doc => {
       console.log(doc.id, '=>', doc.data());
 
+      let fullname = doc.data().firstName + ' ' + doc.data().lastName;
+
       res.status(200).json({
         status: 'success',
-        data: { 'token': doc.id, 'userName': doc.data().firstName, 'role': doc.data().role },
+        data: { 'token': doc.id, 'userName': doc.data().firstName, 'role': doc.data().role, 'fullname':fullname , 'profileImg': doc.data().profileImg },
         msg: 'User Authenticated Sucessfully',
       });
     });

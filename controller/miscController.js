@@ -312,6 +312,69 @@ const getAdminDashboardDetails = async (req, res, next) => {
   }
 }
 
+// Post Comment
+const postComment = async (req, res, next) => {
+  // try {
+
+  var createdDate = new Date();
+
+  console.log(req.body.id);
+  console.log(req.body.campaignId);
+  console.log(req.body.comment);
+  console.log(req.body.profileImg);
+  console.log(req.body.name);
+  console.log(createdDate);
+
+  const data = {
+    userId: req.body.id,
+    campaignId: req.body.campaignId,
+    comment: req.body.comment,
+    profileImg: req.body.profileImg,
+    name: req.body.name,
+    postedDate: createdDate,
+  };
+
+  return db.collection('Comments').doc().set(data).then(() => {
+    console.log("Comment Posted Sucessfully");
+  });
+  //   } catch (er) {
+  //       res.status(500).json({
+  //         status: 'error',
+  //         error: er,
+  //       });
+  //     }
+}
+// Post Campaign Update
+const postCampaignUpdate = async (req, res, next) => {
+  // try {
+
+  var createdDate = new Date();
+
+  console.log(req.body.id);
+  console.log(req.body.campaignId);
+  console.log(req.body.update);
+  console.log(req.body.profileImg);
+  console.log(createdDate);
+
+  const data = {
+    userId: req.body.id,
+    campaignId: req.body.campaignId,
+    update: req.body.update,
+    profileImg: req.body.profileImg,
+    postedDate: createdDate,
+  };
+
+  return db.collection('Campaign-Updates').doc().set(data).then(() => {
+    console.log("Comment Posted Sucessfully");
+  });
+  //   } catch (er) {
+  //       res.status(500).json({
+  //         status: 'error',
+  //         error: er,
+  //       });
+  //     }
+}
+
 module.exports = {
   getDonationRules,
   updateRule,
@@ -321,5 +384,7 @@ module.exports = {
   sendEmail,
   getUserChat,
   sendChatMessage,
-  getAdminDashboardDetails
+  getAdminDashboardDetails,
+  postComment,
+  postCampaignUpdate,
 }
