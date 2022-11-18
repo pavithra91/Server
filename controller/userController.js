@@ -85,12 +85,16 @@ const addUser = async (req, res, next) => {
 // Authenticate User
 const authenticate = async (req, res, next) => {
   try {
+    // Retrieve parameters
     const email = req.body.email;
     const password = req.body.password;
 
+    // Create reference to User collection
     const userRef = db.collection('User');
+    // Check if email and password are exists
     const snapshot = await userRef.where('email', '==', email).where('password', '==', password).get();
 
+    // Check if response is empty
     if (snapshot.empty) {
       console.log('No matching documents.');
       return res.status(400).json({
@@ -104,6 +108,7 @@ const authenticate = async (req, res, next) => {
 
       let fullname = doc.data().firstName + ' ' + doc.data().lastName;
 
+      // Send data to front end
       res.status(200).json({
         status: 'success',
         data: { 'token': doc.id, 'userName': doc.data().firstName, 'role': doc.data().role, 'fullname':fullname , 'profileImg': doc.data().profileImg },
@@ -111,10 +116,10 @@ const authenticate = async (req, res, next) => {
       });
     });
   } catch (er) {
-    // res.status(500).json({
-    //   status: 'error',
-    //   error: er,
-    // });
+     res.status(500).json({
+       status: 'error',
+       error: er,
+     });
   }
 }
 

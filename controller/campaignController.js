@@ -10,6 +10,7 @@ const fieldValue = admin.firestore.FieldValue;
 // Create Campaign
 const create = async (req, res, next) => {
   try {
+    // Check if the request body is empty
     if (!req.body) {
       return res.status(400).json({
         status: 'error',
@@ -21,8 +22,10 @@ const create = async (req, res, next) => {
     var createdDate = new Date();
     console.log(createdDate.toISOString().slice(0, 10));
 
+    // Create dummy ID for campaign
     var id = db.collection('Campaign').doc().id;
 
+    // Map request parameters to Campaign object
     Campaign.campaignName = req.body.campaignName;
     Campaign.campaignStartDate = req.body.campaignStartDate;
     Campaign.campaignEndDate = req.body.campaignEndDate;
@@ -40,13 +43,12 @@ const create = async (req, res, next) => {
     Campaign.noOfDonations = 0;
     Campaign.shortDescription = req.body.shortDescription;
 
-    console.log(Campaign);
-
+    // Add Campaign object as a document to firebase
     const snapshot = await db.collection('Campaign').doc(id).set(Campaign).then(() => {
       console.log("Campaign Created Sucessfully");
     });
 
-
+    // Create relavent campaign request document
     const campaignStatusData = {
       campaignstatus: 'Request  ',
       approvedBy: '',
@@ -54,6 +56,7 @@ const create = async (req, res, next) => {
       approvedDate: ''
     };
 
+    // Send respose to user
     const respose = await db.collection('CampaignApproval').doc(id).set(campaignStatusData).then(() => {
       return res.status(200).json({
         status: 'Success',
