@@ -4,7 +4,7 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 const admin = require('firebase-admin');
-const fieldValue = admin.firestore.FieldValue; 
+const fieldValue = admin.firestore.FieldValue;
 
 
 // Create Campaign
@@ -100,10 +100,10 @@ const getCampaigns = async (req, res, next) => {
 
 
   } catch (er) {
-     res.status(500).json({
-       status: 'error',
-       error: er,
-     });
+    res.status(500).json({
+      status: 'error',
+      error: er,
+    });
   }
 }
 
@@ -183,10 +183,10 @@ const getWatchlist = async (req, res, next) => {
     }
 
   } catch (er) {
-     res.status(500).json({
-       status: 'error',
-       error: er,
-     });
+    res.status(500).json({
+      status: 'error',
+      error: er,
+    });
   }
 }
 
@@ -237,7 +237,7 @@ const getCampaignDetails = async (req, res, next) => {
     }
     else {
       commentResponse.forEach(doc => {
-       // console.log(doc.id, '=>', doc.data());
+        // console.log(doc.id, '=>', doc.data());
         _commentlist.push(doc.data())
       });
 
@@ -253,7 +253,7 @@ const getCampaignDetails = async (req, res, next) => {
     }
     else {
       faqResponse.forEach(doc => {
-       // console.log(doc.id, '=>', doc.data());
+        // console.log(doc.id, '=>', doc.data());
         _faqlist.push(doc.data())
       });
       _response.push(_faqlist);
@@ -268,7 +268,7 @@ const getCampaignDetails = async (req, res, next) => {
     }
     else {
       updatesResponse.forEach(doc => {
-    //    console.log(doc.id, '=>', doc.data());
+        //    console.log(doc.id, '=>', doc.data());
         _updateslist.push(doc.data());
       });
       _response.push(_updateslist);
@@ -293,7 +293,7 @@ const getCampaignDetails = async (req, res, next) => {
 
 const getTopFundRaisers = async (req, res, next) => {
   try {
-    
+
     const citiesRef = db.collection('Campaign');
     const snapshot = await citiesRef.where('topFundraiser', '==', true).get();
     if (snapshot.empty) {
@@ -329,12 +329,10 @@ const getCampaignRequests = async (req, res, next) => {
 
     const campaignRequestRef = db.collection('Campaign');
     let snapshot = null;
-    if(status == "All")
-    {
-      snapshot = await campaignRequestRef.where('campaignStatus', 'in', ['Approved', 'Request', 'Under Review', 'Rejected']).get();  
+    if (status == "All") {
+      snapshot = await campaignRequestRef.where('campaignStatus', 'in', ['Approved', 'Request', 'Under Review', 'Rejected']).get();
     }
-    else
-    {
+    else {
       snapshot = await campaignRequestRef.where('campaignStatus', 'in', [status]).get();
     }
 
@@ -360,10 +358,10 @@ const getCampaignRequests = async (req, res, next) => {
     });
 
   } catch (er) {
-     res.status(500).json({
-       status: 'error',
-       error: er,
-     });
+    res.status(500).json({
+      status: 'error',
+      error: er,
+    });
   }
 }
 
@@ -475,15 +473,13 @@ const getAllCampaigns = async (req, res, next) => {
 
     const campaignRequestRef = db.collection('Campaign');
     let snapshot = null;
-    if(_campaignStatus == "All")
-    {
-      snapshot = await campaignRequestRef.where('dateCreated', '>=', fromDate).where('dateCreated', '<=', toDate).get();  
+    if (_campaignStatus == "All") {
+      snapshot = await campaignRequestRef.where('dateCreated', '>=', fromDate).where('dateCreated', '<=', toDate).get();
     }
-    else
-    {
+    else {
       snapshot = await campaignRequestRef.where('campaignStatus', 'in', [_campaignStatus]).where('dateCreated', '>=', fromDate).where('dateCreated', '<=', toDate).get();
     }
-    
+
     var campaignlist = [];
     if (snapshot.empty) {
       return res.status(200).json({
@@ -512,6 +508,32 @@ const getAllCampaigns = async (req, res, next) => {
   }
 }
 
+// Remove Item from Watchlist
+const removeFromWatchlist = async (req, res, next) => {
+  try {
+    const id = req.body.id;
+    const campaignId = req.body.campaignId;
+
+    const userRef = db.collection('Watchlist').doc(id);
+
+    userRef.update({
+      campaignId: fieldValue.arrayRemove(campaignId)
+    });
+
+    return res.status(200).json({
+      status: 'success',
+      msg: 'Update Sucessfully',
+    });
+
+  } catch (er) {
+    console.log(er);
+    //   res.status(500).json({
+    //     status: 'error',
+    //     error: er,
+    //   });
+  }
+}
+
 
 module.exports = {
   create,
@@ -525,6 +547,7 @@ module.exports = {
   UpdateCampaignStatus,
   getCampaignByCategory,
   updateDocumentList,
-  getAllCampaigns
+  getAllCampaigns,
+  removeFromWatchlist
 }
 

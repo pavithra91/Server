@@ -1,6 +1,6 @@
 const express = require('express');
 const {addUser, authenticate, getUser, getUserBadgeDetails, updateUserProfileImage, updateUserDetails, resetPasswordSendLink, resetPassword, getAllUsers } = require('../controller/userController');
-const { create, getCampaigns, getCampaign, getWatchlist, updateCampaignImage, getCampaignDetails, getTopFundRaisers, getCampaignRequests, UpdateCampaignStatus, getCampaignByCategory, updateDocumentList, getAllCampaigns } = require('../controller/campaignController');
+const { create, getCampaigns, getCampaign, getWatchlist, updateCampaignImage, getCampaignDetails, getTopFundRaisers, getCampaignRequests, UpdateCampaignStatus, getCampaignByCategory, updateDocumentList, getAllCampaigns, removeFromWatchlist } = require('../controller/campaignController');
 const { donate, getAllPaymentDetails } = require('../controller/paymentController');
 const { getDonationRules, updateRule, deleteRule, addRule, getDonationBadges, sendEmail, getUserChat, sendChatMessage, getAdminDashboardDetails, postComment, postCampaignUpdate } = require('../controller/miscController');
 
@@ -30,6 +30,7 @@ router.post('/campaign/UpdateCampaignStatus', UpdateCampaignStatus);
 router.post('/campaign/getCampaignByCategory', getCampaignByCategory);
 router.post('/campaign/updateDocumentList', updateDocumentList);
 router.post('/campaign/getAllCampaigns', getAllCampaigns);
+router.post('/campaign/removeFromWatchlist', removeFromWatchlist);
 
 // Payments
 router.post('/payment/donate', donate);
