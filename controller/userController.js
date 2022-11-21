@@ -5,6 +5,8 @@ var nodemailer = require('nodemailer');
 const app = express();
 app.use(express.json());
 
+const logger = require('../controller/logger')
+
 // Add user to Database
 const addUser = async (req, res, next) => {
   try {
@@ -97,6 +99,7 @@ const authenticate = async (req, res, next) => {
     // Check if response is empty
     if (snapshot.empty) {
       console.log('No matching documents.');
+      logger.systemLogger.log('warn', `User name or password wrong`, {request : '/api/user/authenticate'});
       return res.status(400).json({
         status: 'error',
         msg: 'User Authenticated Failed',
@@ -109,6 +112,7 @@ const authenticate = async (req, res, next) => {
       let fullname = doc.data().firstName + ' ' + doc.data().lastName;
 
       // Send data to front end
+      logger.systemLogger.log('info', `User Authenticated Sucessfully`, {request : '/api/user/authenticate'});
       res.status(200).json({
         status: 'success',
         data: { 'token': doc.id, 'userName': doc.data().firstName, 'role': doc.data().role, 'fullname':fullname , 'profileImg': doc.data().profileImg },
@@ -116,6 +120,7 @@ const authenticate = async (req, res, next) => {
       });
     });
   } catch (er) {
+    logger.systemLogger.log('error', `User Authentication Faild : ${er}` , {request : '/api/user/authenticate'});
      res.status(500).json({
        status: 'error',
        error: er,
@@ -131,13 +136,14 @@ const getUser = async (req, res, next) => {
     const cityRef = db.collection('User').doc(id);
     const doc = await cityRef.get();
     if (!doc.exists) {
-      console.log('No such document!');
+      logger.systemLogger.log('warn', `User ${id} Not Found`, {request : '/api/user/getUser'});
       return res.status(400).json({
         status: 'error',
         msg: 'No User Found',
       });
     } else {
-     // console.log('Document data:', doc.data());
+     
+     logger.systemLogger.log('info', `User ${id} Found Sucessfully`, {request : '/api/user/getUser'});
       res.status(200).json({
         status: 'success',
         data: doc.data(),
@@ -146,6 +152,7 @@ const getUser = async (req, res, next) => {
     }
 
   } catch (er) {
+    logger.systemLogger.log('error', `${er}`, {request : 'getUser'})
      res.status(500).json({
        status: 'error',
        error: er,

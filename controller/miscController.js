@@ -6,6 +6,7 @@ app.use(express.json());
 
 const admin = require('firebase-admin');
 const e = require('express');
+const logger = require('../controller/logger')
 
 
 // Get Donation Rules
@@ -375,6 +376,42 @@ const postCampaignUpdate = async (req, res, next) => {
   //     }
 }
 
+// Get User Log
+const getUserLog = async (req, res, next) => {
+
+  let lmt = '*';//req.body.lmt;
+  let fromDate = req.body.fromDate;
+  let toDate = req.body.toDate;
+  let level = req.body.level;
+
+  if(level == "All")
+  {
+    level = '';
+  }
+
+  console.log(level);
+
+ 
+  var options = {
+    from:   fromDate,//new Date - 24 * 60 * 60 * 1000,
+    until:  toDate, //new Date,
+    limit:  lmt,
+    start:  0,
+    level: level,
+    order:  'desc',
+    fields: ['level', 'message', 'request' ,'timestamp']
+};
+logger.systemLogger.query(options, function (err, result) {
+    if (err) {
+        throw err;
+    }
+
+    return res.status(200).json({
+      data: result,
+    });
+});
+}
+
 module.exports = {
   getDonationRules,
   updateRule,
@@ -387,4 +424,5 @@ module.exports = {
   getAdminDashboardDetails,
   postComment,
   postCampaignUpdate,
+  getUserLog
 }

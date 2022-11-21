@@ -1,0 +1,3 @@
+{"level":"info","message":"User Authenticated Sucessfully","request":"/api/user/authenticate","timestamp":"2022-11-19T08:04:28.868Z"}
+{"level":"info","message":"User Authenticated Sucessfully","request":"/api/user/authenticate","timestamp":"2022-11-19T08:05:04.526Z"}
+{"level":"error","message":"User lqblyRwIeylJjL6V8Chj Found Sucessfully","request":"/api/user/getUser","timestamp":"2022-11-19T08:12:32.570Z"}
