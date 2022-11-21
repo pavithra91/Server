@@ -14,8 +14,15 @@ const donate = async (req, res, next) => {
       });
     }
     const data = req.body;
+    
+ //   if (req.body.userId != null) {
+      
+  //    const donationPointsRef = db.collection('Donation-Points');
+  //    const donationPointSnapshot = await donationPointsRef.get();
 
-    var createdDate = new Date();
+  //  }
+
+  var createdDate = new Date();
     console.log(createdDate.toISOString().slice(0, 10));
 
     Payment.campaignId = req.body.campaignId;
@@ -41,10 +48,13 @@ const donate = async (req, res, next) => {
     oldraiedAmount = doc.data().raiedAmount;
     oldnoOfDonations = doc.data().noOfDonations;
 
+    // Update campaign goal/raised amounts
     const updateresponse = await cityRef.update({ raiedAmount: Number(oldraiedAmount) + Number(req.body.amount), noOfDonations: Number(oldnoOfDonations) + 1 });
 
     if (req.body.userId != null) {
-      var donationPoints = 0
+      var donationPoints = 0;
+
+      
 
       const donationRef = db.collection('DonationPointRules');
       const donationsnapshot = await donationRef.get();
@@ -117,6 +127,7 @@ const donate = async (req, res, next) => {
       msg: 'Donation Added Sucessfully',
     });
 
+    
   } catch (error) {
     return res.status(500).send(error.message);
   }

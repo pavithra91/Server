@@ -534,6 +534,47 @@ const removeFromWatchlist = async (req, res, next) => {
   }
 }
 
+// Add Campaign To Watchlist
+const addToWatchlist = async (req, res, next) => {
+  try {
+    const id = req.body.id;
+    const campaignId = req.body.campaignId;
+
+    console.log(id);
+
+    const watchListRef = db.collection('Watchlist').doc(id);
+    const doc = await watchListRef.get();
+
+    if (!doc.exists) {
+
+      const data = {
+        campaignId: [campaignId]
+      };
+      const res = await db.collection('Watchlist').doc(id).set(data);   
+    }
+    else {
+      const watchListRef2 = db.collection('Watchlist').doc(id);
+      watchListRef2.update({
+        campaignId: fieldValue.arrayUnion(campaignId)
+      });
+    }
+
+    return res.status(200).json({
+      status: 'success',
+      data: "",
+      msg: 'Watchlist updated',
+    });
+
+  } catch (er) {
+    console.log(er);
+    //   res.status(500).json({
+    //     status: 'error',
+    //     error: er,
+    //   });
+  }
+}
+
+
 
 module.exports = {
   create,
@@ -548,6 +589,7 @@ module.exports = {
   getCampaignByCategory,
   updateDocumentList,
   getAllCampaigns,
-  removeFromWatchlist
+  removeFromWatchlist,
+  addToWatchlist
 }
 
