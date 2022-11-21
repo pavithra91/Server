@@ -6,7 +6,7 @@ app.use(express.json());
 
 // Create Campaign
 const donate = async (req, res, next) => {
-  try {
+ // try {
     if (!req.body) {
       return res.status(400).json({
         status: 'error',
@@ -14,15 +14,34 @@ const donate = async (req, res, next) => {
       });
     }
     const data = req.body;
-    
- //   if (req.body.userId != null) {
-      
-  //    const donationPointsRef = db.collection('Donation-Points');
-  //    const donationPointSnapshot = await donationPointsRef.get();
 
-  //  }
+    if (req.body.userId != null) {
 
-  var createdDate = new Date();
+      const donationPointsRef = db.collection('Donation-Points');
+      const donationPointSnapshot = await donationPointsRef.get();
+
+      const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+      console.log(firstDay);
+      console.log(lastDay);
+
+      const previousRef = db.collection('Donations');
+      const previousSnapshot = await previousRef.where('userId', '==', req.body.userId).where('dateCreated', '>=', firstDay).get();
+
+      let points = 0;
+
+      previousSnapshot.forEach(doc => {
+        console.log(doc.data());
+        points = doc.data().first_month
+      });
+
+      console.log(points);
+
+
+/*
+      var createdDate = new Date();
     console.log(createdDate.toISOString().slice(0, 10));
 
     Payment.campaignId = req.body.campaignId;
@@ -127,11 +146,14 @@ const donate = async (req, res, next) => {
       msg: 'Donation Added Sucessfully',
     });
 
-    
-  } catch (error) {
-    return res.status(500).send(error.message);
-  }
+    */
+    }
+
+ //// } catch (error) {
+ //   return res.status(500).send(error.message);
+ // }
 }
+
 
 // Get All Payment Details
 const getAllPaymentDetails = async (req, res, next) => {
