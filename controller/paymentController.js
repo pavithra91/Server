@@ -6,154 +6,146 @@ app.use(express.json());
 
 // Create Campaign
 const donate = async (req, res, next) => {
- // try {
-    if (!req.body) {
-      return res.status(400).json({
-        status: 'error',
-        msg: 'Body is Required',
-      });
-    }
-    const data = req.body;
-
-    if (req.body.userId != null) {
-
-      const donationPointsRef = db.collection('Donation-Points');
-      const donationPointSnapshot = await donationPointsRef.get();
-
-      const now = new Date();
-    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
-      console.log(firstDay);
-      console.log(lastDay);
-
-      const previousRef = db.collection('Donations');
-      const previousSnapshot = await previousRef.where('userId', '==', req.body.userId).where('dateCreated', '>=', firstDay).get();
-
-      let points = 0;
-
-      previousSnapshot.forEach(doc => {
-        console.log(doc.data());
-        points = doc.data().first_month
-      });
-
-      console.log(points);
-
-
-/*
-      var createdDate = new Date();
-    console.log(createdDate.toISOString().slice(0, 10));
-
-    Payment.campaignId = req.body.campaignId;
-    Payment.amount = req.body.amount;
-    Payment.donorName = req.body.name;
-    Payment.message = req.body.message;
-    Payment.paymentStatus = "Paid";
-    Payment.dateCreated = createdDate;
-
-    console.log(Payment);
-
-    const snapshot = await db.collection('Donations').doc().set(Payment).then(() => {
-      console.log("Donation Added Sucessfully");
+  // try {
+  if (!req.body) {
+    return res.status(400).json({
+      status: 'error',
+      msg: 'Body is Required',
     });
+  }
+  const usrId = req.body.userId;
+  const amount = req.body.amount;
 
-    let oldraiedAmount = 0;
-    let oldnoOfDonations = 0;
+  var createdDate = new Date();
+        console.log(createdDate.toISOString().slice(0, 10));
+    
+        Payment.campaignId = req.body.campaignId;
+        Payment.amount = amount;
+        Payment.donorName = req.body.name;
+        Payment.message = req.body.message;
+        Payment.paymentStatus = "Paid";
+        Payment.dateCreated = createdDate;
+        Payment.donationStatus = req.body.donationMode;
+        Payment.trxref = req.body.trxref;
+    
+        console.log(Payment);
+    
+        const snapshot = await db.collection('Donations').doc().set(Payment).then(() => {
+          console.log("Donation Added Sucessfully");
+        });
+    
+        let oldraiedAmount = 0;
+        let oldnoOfDonations = 0;
+    
+        const cityRef = db.collection('Campaign').doc(req.body.campaignId);
+        const doc = await cityRef.get();
+    
+        oldraiedAmount = doc.data().raiedAmount;
+        oldnoOfDonations = doc.data().noOfDonations;
+    
+        // Update campaign goal/raised amounts
+        const updateresponse = await cityRef.update({ raiedAmount: Number(oldraiedAmount) + Number(amount), noOfDonations: Number(oldnoOfDonations) + 1 });
 
+  if (!req.body.donationMode) {
 
-    const cityRef = db.collection('Campaign').doc(req.body.campaignId);
-    const doc = await cityRef.get();
-
-    oldraiedAmount = doc.data().raiedAmount;
-    oldnoOfDonations = doc.data().noOfDonations;
-
-    // Update campaign goal/raised amounts
-    const updateresponse = await cityRef.update({ raiedAmount: Number(oldraiedAmount) + Number(req.body.amount), noOfDonations: Number(oldnoOfDonations) + 1 });
-
-    if (req.body.userId != null) {
-      var donationPoints = 0;
-
-      
-
-      const donationRef = db.collection('DonationPointRules');
-      const donationsnapshot = await donationRef.get();
-      donationsnapshot.forEach(doc => {
-
-        if (Number(req.body.amount) > Number(doc.data().min) && Number(req.body.amount) <= Number(doc.data().max)) {
-          donationPoints = Number(doc.data().points);
-          console.log("Donation Points " + donationPoints);
-        }
-      });
-
-      var userdonationPoints = 0;
-
-      const userRef = db.collection('User').doc("lqblyRwIeylJjL6V8Chj");
-      const usersnapshot = await userRef.get();
-
-      if (usersnapshot.empty) {
-        console.log("empty");
-      }
-
-      const badgesRef = db.collection('Badges');
-      const badgessnapshot = await badgesRef.get();
-      var newBadge = "";
-
-      userdonationPoints = usersnapshot.data().donationPoints + donationPoints;
-
-      badgessnapshot.forEach(doc => {
-
-        if (userdonationPoints > Number(doc.data().minPoints) && userdonationPoints <= Number(doc.data().maxPoints)) {
-          console.log(doc.data().badgeName);
-          newBadge = doc.data().id
-        }
-      });
-
-      const userBadgesRef = db.collection('Donation-Badges').doc("lqblyRwIeylJjL6V8Chj");
-      const UserBadgessnapshot = await userBadgesRef.get();
-      var updateneeded = true;
-
-      var badgeList = [];
-
-      UserBadgessnapshot.data().badge.forEach(item => {
-        if (newBadge == item) {
-          console.log(item);
-          updateneeded = false;
-          badgeList.push(item);
-        }
-        else {
-          badgeList.push(item);
-        }
-      });
-
-      if (updateneeded) {
-        badgeList.push(newBadge);
-      }
-
-      console.log(badgeList);
-      if (updateneeded == true) {
-        const response = await userBadgesRef.update({ badge: badgeList });
-        console.log(response)
-      }
-
-    }
-    else {
-      console.log("else");
-    }
+    const userRef = db.collection('User').doc(usrId);
+    var badgeUpdteResponse = await CalculatePoints(userRef, usrId, amount);
+    console.log(badgeUpdteResponse);
 
     return res.status(200).json({
-      status: 'Success',
-      data: updateresponse,
-      msg: 'Donation Added Sucessfully',
+      status: 'success',
+      data: badgeUpdteResponse,
+      msg: 'Donation Complete',
     });
+  }
 
-    */
-    }
-
- //// } catch (error) {
- //   return res.status(500).send(error.message);
- // }
+  //// } catch (error) {
+  //   return res.status(500).send(error.message);
+  // }
 }
 
+async function CalculatePoints(userRef, usrId, amount){
+  const donationPointsRef = db.collection('Donation-Points');
+  const donationPointSnapshot = await donationPointsRef.get();
+
+  const now = new Date();
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+  console.log(firstDay);
+  console.log(lastDay);
+
+  const previousRef = db.collection('Donations');
+  const previousSnapshot = await previousRef.where('userId', '==', usrId).where('dateCreated', '>=', firstDay).get();
+
+  let donationPoints = 0;
+
+  previousSnapshot.forEach(doc => {
+    //  console.log(doc.data());
+    donationPointSnapshot.forEach(element => {
+      donationPoints = Number(element.data().first_month)
+      console.log("first Month points " + donationPoints);
+    })
+  });
+
+  const donationRef = db.collection('DonationPointRules');
+  const donationsnapshot = await donationRef.get();
+  donationsnapshot.forEach(doc => {
+    if (Number(amount) > Number(doc.data().min) && Number(amount) <= Number(doc.data().max)) {
+      console.log("Already available points " + Number(doc.data().points));
+      donationPoints = donationPoints + Number(doc.data().points);
+      console.log("Donation Points " + donationPoints);
+    }
+  });
+
+  const usersnapshot = await userRef.get();
+  donationPoints = donationPoints + usersnapshot.data().donationPoints;
+
+  const badgesRef = db.collection('Badges');
+  const badgessnapshot = await badgesRef.get();
+  var newBadgeID = "";
+
+
+  badgessnapshot.forEach(doc => {
+    if (Number(donationPoints) >= Number(doc.data().minPoints) && Number(donationPoints) <= Number(doc.data().maxPoints)) {
+      console.log(doc.data().badgeName);
+      newBadgeID = doc.data().id
+      console.log("New Badge ID " + newBadgeID);
+    }
+  });
+
+  const userBadgesRef = db.collection('Donation-Badges').doc(usrId);
+  const UserBadgessnapshot = await userBadgesRef.get();
+  var isUpdate = true;
+
+  var badgeList = [];
+
+  UserBadgessnapshot.data().badge.forEach(item => {
+    if (newBadgeID == item) {
+      console.log(item);
+      isUpdate = false;
+      badgeList.push(item);
+    }
+    else {
+      badgeList.push(item);
+    }
+  });
+
+  if (isUpdate) {
+    if(newBadgeID != ""){
+      badgeList.push(newBadgeID);
+    }
+  }
+
+  console.log(badgeList);
+  if (isUpdate == true) {
+    const response = await userBadgesRef.update({ badge: badgeList });
+  }
+  
+  const response = await userRef.update({ donationPoints: donationPoints });
+
+  return response;
+}
 
 // Get All Payment Details
 const getAllPaymentDetails = async (req, res, next) => {

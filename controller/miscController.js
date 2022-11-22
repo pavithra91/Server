@@ -79,7 +79,7 @@ const deleteRule = async (req, res, next) => {
       const snapshot = query.docs[0];
       const data = snapshot.data();
 
-      const res = await db.collection('cities').doc(data.id).delete();
+      const res = await db.collection('DonationPointRules').doc(data.id).delete();
 
       return res.status(200).json({
         status: 'Success',
@@ -150,6 +150,104 @@ const getDonationBadges = async (req, res, next) => {
       data: badgesList,
       msg: 'User Badges Found',
     });
+  } catch (er) {
+    // res.status(500).json({
+    //   status: 'error',
+    //   error: er,
+    // });
+  }
+}
+
+// Add Donation Badge
+const addDonationBadge = async (req, res, next) => {
+  try {
+        if (!req.body) {
+      return res.status(400).json({
+        status: 'error',
+        msg: 'Body is Required',
+      });
+    }
+
+    var id = db.collection('Badges').doc().id;
+
+    const data = {
+      id: id,
+      badgeName: req.body.badgeName,
+      minPoints: req.body.minPoints,
+      maxPoints: req.body.maxPoints,
+      badgeDescription: req.body.badgeDescription,
+      imageUrl: req.body.imageUrl,
+      awardingCategory: req.body.awardingCategory,
+    };
+
+    return db.collection('Badges').doc().set(data).then(() => {
+      console.log("Donation Badge Added Sucessfully");
+    });
+
+  } catch (er) {
+    // res.status(500).json({
+    //   status: 'error',
+    //   error: er,
+    // });
+  }
+}
+
+// Delete Donation Badge
+const deleteDonationBadge = async (req, res, next) => {
+  try {
+
+    const query = await db.collection('Badges').where('badgeName', '==', req.body.badgeName).get();
+
+    if (!query.empty) {
+      const snapshot = query.docs[0];
+      const data = snapshot.data();
+
+      const res = await db.collection('Badges').doc(data.id).delete();
+
+      return res.status(200).json({
+        status: 'Success',
+        msg: "Delete Donation Badge Successfully",
+      });
+    }
+
+    return res.status(500).json({
+      status: 'Errpr',
+      msg: "Deletion Failed",
+    });
+
+  } catch (er) {
+    // res.status(500).json({
+    //   status: 'error',
+    //   error: er,
+    // });
+  }
+}
+
+// Update Donation Rules
+const updateBadge = async (req, res, next) => {
+  try {
+
+    const query = await db.collection('Badges').where('badgeName', '==', req.body.badgeName).get();
+
+    if (!query.empty) {
+      const snapshot = query.docs[0];
+      const data = snapshot.data();
+
+      const cityRef = db.collection('Badges').doc(data.id);
+
+      const response = await cityRef.update({ minPoints: req.body.minPoints, maxPoints: req.body.maxPoints, badgeDescription: req.body.badgeDescription, imageUrl: req.body.imageUrl, awardingCategory: req.body.awardingCategory });
+
+      return res.status(200).json({
+        status: 'Success',
+        msg: "Update Badge Details Successfully",
+      });
+    }
+
+    return res.status(500).json({
+      status: 'Errpr',
+      msg: "Update Failed",
+    });
+
   } catch (er) {
     // res.status(500).json({
     //   status: 'error',
@@ -418,6 +516,9 @@ module.exports = {
   deleteRule,
   addRule,
   getDonationBadges,
+  addDonationBadge,
+  deleteDonationBadge,
+  updateBadge,
   sendEmail,
   getUserChat,
   sendChatMessage,
