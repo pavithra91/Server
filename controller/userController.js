@@ -4,6 +4,7 @@ const express = require('express');
 var nodemailer = require('nodemailer');
 const app = express();
 app.use(express.json());
+require("dotenv").config();
 
 const logger = require('../controller/logger')
 
@@ -46,19 +47,22 @@ const addUser = async (req, res, next) => {
     User.donationLevel = "";
     User.donationPoints = 0;
     User.profileImg = "";
+    User.noOfCreatedCampaigns = 0;
+    User.donations = [];
+    User.bio = "";
 
     const createdUser = await db.collection('User').add(User);
 
     var transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
+      host: process.env.EMAIL_HOST,
       auth: {
-        user: 'dev.pavithraj@gmail.com',
-        pass: 'zaqyfidgkfttfxph'
+        user: process.env.EMAIL_ID,
+        pass: process.env.EMAIL_PWD
       }
     });
 
     var mailOptions = {
-      from: 'dev.pavithraj@gmail.com',
+      from: process.env.EMAIL_FROM,
       to: req.body.email,
       subject: 'Welcome to Charity',
       html: 'Hello ' + req.body.firstName + ' ' + req.body.lastName + ', <br /><br /> Thank you for signing up to Charity! We \'re excited to have you onboard and will be happy to help you set everything up.  Please confirm your email (' + req.body.email + ') by clicking the button below.'
@@ -69,6 +73,12 @@ const addUser = async (req, res, next) => {
     //      return console.log(error);
     //    }
     //   console.log('Message sent: %s', info.messageId);
+
+        // Update Dashboard values
+        const dashboardRef = db.collection('Admin-Dashboard').doc(process.env.DASHBOARD_DOC_ID);
+        const dashboardSnapshot = await dashboardRef.update({
+          noOfUsers: fieldValue.increment(1)
+        });
 
     return res.status(200).json({
       status: 'success',
@@ -165,8 +175,8 @@ const getUserBadgeDetails = async (req, res, next) => {
   try {
     const id = req.query.id;
 
-    const citiesRef = db.collection('Donation-Badges').doc(id);
-    const snapshot = await citiesRef.get();
+    const donationBadgeRef = db.collection('Donation-Badges').doc(id);
+    const snapshot = await donationBadgeRef.get();
     if (snapshot.empty) {
       console.log('No matching documents.');
       return;
@@ -179,16 +189,57 @@ const getUserBadgeDetails = async (req, res, next) => {
     });
 
     const badgesRef = db.collection('Badges');
-    const badgelist = await badgesRef.get();
+    const badgelist = await badgesRef.where('id' , 'in', badge).get();
 
     var respose = [];
     badgelist.forEach(doc => {
       respose.push(doc.data())
     });
+    
+    var finalList = [];
+    var donationLevelList = [];
+    var campaignList = [];
+    finalList.push(respose);
+
+
+    /* 
+        Get recent donation details
+    */
+
+    const userRef = db.collection('User').doc(id);
+    const userSnapshot = await userRef.get();
+    
+    let userDonations = userSnapshot.data().donations;
+    if(userDonations.length > 5){
+      userDonations = userDonations.slice(-5)
+    }
+
+    if(userDonations.length  > 0){
+      const campaignRef = db.collection('Campaign');
+      const campaignListSnapshot = await campaignRef.where('id' , 'in', userDonations).get();
+   
+      campaignListSnapshot.forEach(doc => {
+        campaignList.push(doc.data())
+      });
+      finalList.push(campaignList);
+    }
+    else{
+      finalList.push(campaignList);
+    }
+
+    const donationLevelsRef = db.collection('Donation-Levels');
+    const donationLevelsSnapshot = await donationLevelsRef.where('levelName' , '==', userSnapshot.data().donationLevel).get();
+
+    donationLevelsSnapshot.forEach(doc => {
+      donationLevelList.push(doc.data())
+    });
+
+    finalList.push(donationLevelList);
+    console.log(donationLevelList)
 
     res.status(200).json({
       status: 'success',
-      data: respose,
+      data: finalList,
       msg: 'User Badges Found',
     });
 
@@ -399,6 +450,30 @@ const getAllUsers = async (req, res, next) => {
   }
 }
 
+// Update User Details
+const updateBio = async (req, res, next) => {
+  try {
+    debugger;
+    const id = req.body.id;
+    const bioTxt = req.body.bio;
+
+    const userRef = db.collection('User').doc(id);
+    const response = await userRef.update({ bio: bioTxt });
+
+    return res.status(200).json({
+      status: 'success',
+      msg: 'Bio Updated Sucessfully',
+    });
+
+  } catch (er) {
+    console.log(er);
+    //   res.status(500).json({
+    //     status: 'error',
+    //     error: er,
+    //   });
+  }
+}
+
 module.exports = {
   addUser,
   authenticate,
@@ -408,5 +483,6 @@ module.exports = {
   updateUserDetails,
   resetPasswordSendLink,
   resetPassword,
-  getAllUsers
+  getAllUsers,
+  updateBio
 }

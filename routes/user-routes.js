@@ -1,6 +1,6 @@
 const express = require('express');
-const {addUser, authenticate, getUser, getUserBadgeDetails, updateUserProfileImage, updateUserDetails, resetPasswordSendLink, resetPassword, getAllUsers } = require('../controller/userController');
-const { create, getCampaigns, getCampaign, getWatchlist, updateCampaignImage, getCampaignDetails, getTopFundRaisers, getCampaignRequests, UpdateCampaignStatus, getCampaignByCategory, updateDocumentList, getAllCampaigns, removeFromWatchlist, addToWatchlist } = require('../controller/campaignController');
+const {addUser, authenticate, getUser, getUserBadgeDetails, updateUserProfileImage, updateUserDetails, resetPasswordSendLink, resetPassword, getAllUsers, updateBio } = require('../controller/userController');
+const { create, getCampaigns, getCampaign, getWatchlist, updateCampaignImage, getCampaignDetails, getTopFundRaisers, getCampaignRequests, UpdateCampaignStatus, getCampaignByCategory, getCampaignByProvince, updateDocumentList, getAllCampaigns, removeFromWatchlist, addToWatchlist } = require('../controller/campaignController');
 const { donate, getAllPaymentDetails } = require('../controller/paymentController');
 const { getDonationRules, updateRule, deleteRule, addRule, getDonationBadges, addDonationBadge, deleteDonationBadge, updateBadge, sendEmail, getUserChat, sendChatMessage, getAdminDashboardDetails, postComment, postCampaignUpdate, getUserLog } = require('../controller/miscController');
 
@@ -16,6 +16,7 @@ router.post('/user/updateUserDetails', updateUserDetails);
 router.post('/user/resetPasswordSendLink', resetPasswordSendLink);
 router.post('/user/resetPassword', resetPassword);
 router.post('/user/getAllUsers', getAllUsers);
+router.post('/user/updateBio', updateBio);
 
 // Campaign
 router.post('/campaign/create', create);
@@ -28,6 +29,7 @@ router.get('/campaign/getTopFundRaisers', getTopFundRaisers);
 router.get('/campaign/getCampaignRequests', getCampaignRequests);
 router.post('/campaign/UpdateCampaignStatus', UpdateCampaignStatus);
 router.post('/campaign/getCampaignByCategory', getCampaignByCategory);
+router.post('/campaign/getCampaignByProvince', getCampaignByProvince);
 router.post('/campaign/updateDocumentList', updateDocumentList);
 router.post('/campaign/getAllCampaigns', getAllCampaigns);
 router.post('/campaign/removeFromWatchlist', removeFromWatchlist);

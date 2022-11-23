@@ -5,6 +5,7 @@ const app = express();
 app.use(express.json());
 const admin = require('firebase-admin');
 const fieldValue = admin.firestore.FieldValue;
+require("dotenv").config();
 
 
 // Create Campaign
@@ -30,33 +31,46 @@ const create = async (req, res, next) => {
     Campaign.campaignStartDate = req.body.campaignStartDate;
     Campaign.campaignEndDate = req.body.campaignEndDate;
     Campaign.campaignDescription = req.body.campaignDescription;
-    Campaign.goalAmount = parseFloat(req.body.goal);
-    Campaign.raiedAmount = 0.0;
+    Campaign.shortDescription = req.body.shortDescription;
     Campaign.city = req.body.city;
     Campaign.province = req.body.province;
+    Campaign.goalAmount = parseFloat(req.body.goal);
+    Campaign.raiedAmount = 0.0;
+    Campaign.createdBy = req.body.createdBy;
+    Campaign.category = req.body.category;
     Campaign.campaignStatus = "Request";
     Campaign.dateCreated = createdDate;
-    Campaign.createdBy = req.body.createdBy;
     Campaign.id = id;
     Campaign.headerImg = "";
     Campaign.mainImg = "";
     Campaign.noOfDonations = 0;
-    Campaign.shortDescription = req.body.shortDescription;
 
     // Add Campaign object as a document to firebase
     const snapshot = await db.collection('Campaign').doc(id).set(Campaign).then(() => {
       console.log("Campaign Created Sucessfully");
     });
 
+    // Update Dashboard values
+    const dashboardRef = db.collection('Admin-Dashboard').doc(process.env.DASHBOARD_DOC_ID);
+    const dashboardSnapshot = await dashboardRef.update({
+      allCampaigns: fieldValue.increment(1)
+    });
+
+    // Update User values
+    const userRef = db.collection('User').doc(req.body.createdBy);
+    const dashboardUserSnapshot = await userRef.update({
+      noOfCreatedCampaigns: fieldValue.increment(1)
+    });
+
     // Create relavent campaign request document
     const campaignStatusData = {
-      campaignstatus: 'Request  ',
+      campaignstatus: 'Request',
       approvedBy: '',
       comment: '',
       approvedDate: ''
     };
 
-    // Send respose to user
+    // Create Approval Request
     const respose = await db.collection('CampaignApproval').doc(id).set(campaignStatusData).then(() => {
       return res.status(200).json({
         status: 'Success',
@@ -372,8 +386,7 @@ const UpdateCampaignStatus = async (req, res, next) => {
     const reqStatus = req.body.reqStatus;
     const reqComment = req.body.reqComment;
     const userId = req.body.userId;
-
-    console.log(userId);
+    const creator = req.body.creator;
 
     const campaignRef = db.collection('Campaign').doc(id);
     const resCampaign = await campaignRef.update({ campaignStatus: reqStatus });
@@ -384,11 +397,21 @@ const UpdateCampaignStatus = async (req, res, next) => {
     const campaignStatusRef = db.collection('CampaignApproval').doc(id);
     const resCampaignStatus = await campaignStatusRef.update({ campaignstatus: reqStatus, comment: reqComment, approvedDate: createdDate.toISOString().slice(0, 10), approvedBy: userId });
 
+    const resUpdate = await checkCampaignBadge(creator);
+
     console.log(resCampaign);
+
+    if (reqStatus == "Approved") {
+      // Update Dashboard values
+      const dashboardRef = db.collection('Admin-Dashboard').doc(process.env.DASHBOARD_DOC_ID);
+      const dashboardSnapshot = await dashboardRef.update({
+        activeCampaigns: fieldValue.increment(1)
+      });
+    }
 
     return res.status(200).json({
       status: 'success',
-      msg: 'Update Sucessfully',
+      msg: 'Campaign Status update Sucessfully',
     });
 
   } catch (er) {
@@ -400,16 +423,74 @@ const UpdateCampaignStatus = async (req, res, next) => {
   }
 }
 
+// Function : Check for campaign badges
+async function checkCampaignBadge(creator) {
+  debugger;
+  const userRef = db.collection('User').doc(creator);
+  const doc = await userRef.get();
+
+  const userBadgesRef = db.collection('Donation-Badges').doc(creator);
+
+  const badgesRef = db.collection('Badges');
+  const badgesSnapshot = await badgesRef.where('awardingCategory', '==', 'Campaign Creator').get();
+
+  let noOfCampaigns = 0;
+  let badgeID = "";
+  let isUpdate = false;
+
+  noOfCampaigns = doc.data().noOfCreatedCampaigns;
+
+
+  if (noOfCampaigns == 0) {
+    // Update User profile
+    noOfCampaigns = noOfCampaigns + 1;
+
+    badgesSnapshot.forEach(doc => {
+      console.log(doc.data());
+    });
+
+    badgesSnapshot.forEach(doc => {
+      // First Approved Campaign
+      if (doc.data().minPoints == 1) {
+        // Update user's badge list
+        badgeID = doc.data().id;
+      }
+    });
+  }
+  else {
+    noOfCampaigns = noOfCampaigns + 1;
+    badgesSnapshot.forEach(doc => {
+      if (doc.data().minPoints == noOfCampaigns) {
+        // Update user's badge list
+        badgeID = doc.data().id;
+      }
+    });
+  }
+
+  console.log(badgeID);
+
+  if (badgeID != "") {
+    const resUserBadgesRef = await userBadgesRef.update({
+      badge: fieldValue.arrayUnion(badgeID)
+    });
+  }
+
+  const resUser = await userRef.update({ noOfCreatedCampaigns: noOfCampaigns });
+}
+
 // Get Campaigns by Category
 const getCampaignByCategory = async (req, res, next) => {
   try {
     const category = req.body.category;
-    console.log(category);
-    const citiesRef = db.collection('Campaign');
-    const snapshot = await citiesRef.where('category', 'in', [category]).get();
+    const campaignRef = db.collection('Campaign');
+    const snapshot = await campaignRef.where('category', '==', category).get();
+
     if (snapshot.empty) {
-      console.log('No matching documents.');
-      return;
+      console.log('No matching documents by Category.');
+      return res.status(200).json({
+        status: 'error',
+        msg: 'No data found',
+      });
     }
 
     var campaignlist = [];
@@ -424,7 +505,41 @@ const getCampaignByCategory = async (req, res, next) => {
       msg: 'Campaign List Found',
     });
 
+  } catch (er) {
+    res.status(500).json({
+      status: 'error',
+      error: er,
+    });
+  }
+}
 
+// Get Campaigns by Province
+const getCampaignByProvince = async (req, res, next) => {
+  try {
+    const province = req.body.province;
+    console.log(province);
+    const campaignRef = db.collection('Campaign');
+    const snapshot = await campaignRef.where('province', '==', province).get();
+
+    if (snapshot.empty) {
+      console.log('No matching documents by Province.');
+      return res.status(200).json({
+        status: 'error',
+        msg: 'No data found',
+      });
+    }
+
+    var campaignlist = [];
+    snapshot.forEach(doc => {
+      console.log(doc.id, '=>', doc.data());
+      campaignlist.push(doc.data())
+    });
+
+    return res.status(200).json({
+      status: 'success',
+      data: campaignlist,
+      msg: 'Campaign List Found',
+    });
 
   } catch (er) {
     res.status(500).json({
@@ -550,7 +665,7 @@ const addToWatchlist = async (req, res, next) => {
       const data = {
         campaignId: [campaignId]
       };
-      const res = await db.collection('Watchlist').doc(id).set(data);   
+      const res = await db.collection('Watchlist').doc(id).set(data);
     }
     else {
       const watchListRef2 = db.collection('Watchlist').doc(id);
@@ -587,6 +702,7 @@ module.exports = {
   getCampaignRequests,
   UpdateCampaignStatus,
   getCampaignByCategory,
+  getCampaignByProvince,
   updateDocumentList,
   getAllCampaigns,
   removeFromWatchlist,

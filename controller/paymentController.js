@@ -3,6 +3,9 @@ const Payment = require('../models/payment')
 const express = require('express');
 const app = express();
 app.use(express.json());
+require("dotenv").config();
+
+const logger = require('../controller/logger')
 
 // Create Campaign
 const donate = async (req, res, next) => {
@@ -17,40 +20,45 @@ const donate = async (req, res, next) => {
   const amount = req.body.amount;
 
   var createdDate = new Date();
-        console.log(createdDate.toISOString().slice(0, 10));
-    
-        Payment.campaignId = req.body.campaignId;
-        Payment.amount = amount;
-        Payment.donorName = req.body.name;
-        Payment.message = req.body.message;
-        Payment.paymentStatus = "Paid";
-        Payment.dateCreated = createdDate;
-        Payment.donationStatus = req.body.donationMode;
-        Payment.trxref = req.body.trxref;
-    
-        console.log(Payment);
-    
-        const snapshot = await db.collection('Donations').doc().set(Payment).then(() => {
-          console.log("Donation Added Sucessfully");
-        });
-    
-        let oldraiedAmount = 0;
-        let oldnoOfDonations = 0;
-    
-        const cityRef = db.collection('Campaign').doc(req.body.campaignId);
-        const doc = await cityRef.get();
-    
-        oldraiedAmount = doc.data().raiedAmount;
-        oldnoOfDonations = doc.data().noOfDonations;
-    
-        // Update campaign goal/raised amounts
-        const updateresponse = await cityRef.update({ raiedAmount: Number(oldraiedAmount) + Number(amount), noOfDonations: Number(oldnoOfDonations) + 1 });
+  console.log(createdDate.toISOString().slice(0, 10));
+
+  Payment.campaignId = req.body.campaignId;
+  Payment.amount = amount;
+  Payment.donorName = req.body.name;
+  Payment.message = req.body.message;
+  Payment.paymentStatus = "Paid";
+  Payment.dateCreated = createdDate;
+  Payment.donationStatus = req.body.donationMode;
+  Payment.trxref = req.body.trxref;
+
+  console.log(Payment);
+
+  const snapshot = await db.collection('Donations').doc().set(Payment).then(() => {
+    console.log("Donation Added Sucessfully");
+  });
+
+  // Update Dashboard values
+  const dashboardRef = db.collection('Admin-Dashboard').doc(process.env.DASHBOARD_DOC_ID);
+  const dashboardSnapshot = await dashboardRef.update({
+    noOfTransactions: fieldValue.increment(1), amounRaised: fieldValue.increment(amount)
+  });
+
+  let oldraiedAmount = 0;
+  let oldnoOfDonations = 0;
+
+  const cityRef = db.collection('Campaign').doc(req.body.campaignId);
+  const doc = await cityRef.get();
+
+  oldraiedAmount = doc.data().raiedAmount;
+  oldnoOfDonations = doc.data().noOfDonations;
+
+  // Update campaign goal/raised amounts
+  const updateresponse = await cityRef.update({ raiedAmount: Number(oldraiedAmount) + Number(amount), noOfDonations: Number(oldnoOfDonations) + 1 });
 
   if (!req.body.donationMode) {
 
     const userRef = db.collection('User').doc(usrId);
     var badgeUpdteResponse = await CalculatePoints(userRef, usrId, amount);
-    console.log(badgeUpdteResponse);
 
     return res.status(200).json({
       status: 'success',
@@ -64,7 +72,7 @@ const donate = async (req, res, next) => {
   // }
 }
 
-async function CalculatePoints(userRef, usrId, amount){
+async function CalculatePoints(userRef, usrId, amount) {
   const donationPointsRef = db.collection('Donation-Points');
   const donationPointSnapshot = await donationPointsRef.get();
 
@@ -132,7 +140,7 @@ async function CalculatePoints(userRef, usrId, amount){
   });
 
   if (isUpdate) {
-    if(newBadgeID != ""){
+    if (newBadgeID != "") {
       badgeList.push(newBadgeID);
     }
   }
@@ -141,7 +149,7 @@ async function CalculatePoints(userRef, usrId, amount){
   if (isUpdate == true) {
     const response = await userBadgesRef.update({ badge: badgeList });
   }
-  
+
   const response = await userRef.update({ donationPoints: donationPoints });
 
   return response;

@@ -1,5 +1,5 @@
 class User{
-    constructor(id, firstName, lastName, email, password, nic, dob, phone, role, userStatus, dateCreated, city, address, donationLevel, donationPoints, profileImg)
+    constructor(id, firstName, lastName, email, password, nic, dob, phone, role, userStatus, dateCreated, city, address, donationLevel, donationPoints, profileImg, noOfCreatedCampaigns, donations, bio)
     {
         this.id = id;
         this.firstName = firstName;
@@ -17,5 +17,8 @@ class User{
         this.donationLevel = donationLevel;
         this.donationPoints = donationPoints;
         this.profileImg = profileImg;
+        this.noOfCreatedCampaigns = noOfCreatedCampaigns;
+        this.donations = donations;
+        this.bio = bio;
     }
 }
