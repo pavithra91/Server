@@ -44,6 +44,7 @@ const create = async (req, res, next) => {
     Campaign.headerImg = "";
     Campaign.mainImg = "";
     Campaign.noOfDonations = 0;
+    Campaign.goalType = req.body.goalType;
 
     // Add Campaign object as a document to firebase
     const snapshot = await db.collection('Campaign').doc(id).set(Campaign).then(() => {
@@ -495,8 +496,10 @@ const getCampaignByCategory = async (req, res, next) => {
 
     var campaignlist = [];
     snapshot.forEach(doc => {
-      console.log(doc.id, '=>', doc.data());
-      campaignlist.push(doc.data())
+      if (doc.data().campaignStatus == "Approved") {
+        console.log(doc.id, '=>', doc.data());
+        campaignlist.push(doc.data())
+      }
     });
 
     return res.status(200).json({
@@ -531,8 +534,10 @@ const getCampaignByProvince = async (req, res, next) => {
 
     var campaignlist = [];
     snapshot.forEach(doc => {
-      console.log(doc.id, '=>', doc.data());
-      campaignlist.push(doc.data())
+      if (doc.data().campaignStatus == "Approved") {
+        console.log(doc.id, '=>', doc.data());
+        campaignlist.push(doc.data())
+      }
     });
 
     return res.status(200).json({

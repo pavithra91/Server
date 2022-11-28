@@ -2,7 +2,7 @@ const express = require('express');
 const {addUser, authenticate, getUser, getUserBadgeDetails, updateUserProfileImage, updateUserDetails, resetPasswordSendLink, resetPassword, getAllUsers, updateBio } = require('../controller/userController');
 const { create, getCampaigns, getCampaign, getWatchlist, updateCampaignImage, getCampaignDetails, getTopFundRaisers, getCampaignRequests, UpdateCampaignStatus, getCampaignByCategory, getCampaignByProvince, updateDocumentList, getAllCampaigns, removeFromWatchlist, addToWatchlist } = require('../controller/campaignController');
 const { donate, getAllPaymentDetails } = require('../controller/paymentController');
-const { getDonationRules, updateRule, deleteRule, addRule, getDonationBadges, addDonationBadge, deleteDonationBadge, updateBadge, sendEmail, getUserChat, sendChatMessage, getAdminDashboardDetails, postComment, postCampaignUpdate, getUserLog } = require('../controller/miscController');
+const { getDonationRules, updateRule, deleteRule, addRule, getDonationBadges, addDonationBadge, deleteDonationBadge, updateBadge, sendEmail, getUserChat, sendChatMessage, getAdminDashboardDetails, postComment, postCampaignUpdate, updateCampaignStory, getUserLog, getCampaaignCreatorRequest } = require('../controller/miscController');
 
 const router = express.Router();
 
@@ -54,7 +54,9 @@ router.post('/misc/sendChatMessage', sendChatMessage);
 router.get('/misc/getAdminDashboardDetails', getAdminDashboardDetails);
 router.post('/misc/postComment', postComment);
 router.post('/misc/postCampaignUpdate', postCampaignUpdate);
+router.post('/misc/updateCampaignStory', updateCampaignStory);
 router.post('/misc/getUserLog', getUserLog);
+router.get('/misc/getCampaaignCreatorRequest', getCampaaignCreatorRequest);
 
 module.exports = {
     routes: router

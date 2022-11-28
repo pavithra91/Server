@@ -3,6 +3,8 @@ const Payment = require('../models/payment')
 const express = require('express');
 const app = express();
 app.use(express.json());
+const admin = require('firebase-admin');
+const fieldValue = admin.firestore.FieldValue;
 require("dotenv").config();
 
 const logger = require('../controller/logger')
