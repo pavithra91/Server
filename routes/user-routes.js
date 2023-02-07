@@ -1,8 +1,8 @@
 const express = require('express');
 const {addUser, authenticate, getUser, getUserBadgeDetails, updateUserProfileImage, updateUserDetails, resetPasswordSendLink, resetPassword, getAllUsers, updateBio } = require('../controller/userController');
-const { create, getCampaigns, getCampaign, getWatchlist, updateCampaignImage, getCampaignDetails, getTopFundRaisers, getCampaignRequests, UpdateCampaignStatus, getCampaignByCategory, getCampaignByProvince, updateDocumentList, getAllCampaigns, removeFromWatchlist, addToWatchlist } = require('../controller/campaignController');
+const { create, getCampaigns, getCampaign, getWatchlist, updateCampaignImage, getCampaignDetails, getTopFundRaisers, getCampaignRequests, UpdateCampaignStatus, getCampaignByCategory, getCampaignByProvince, updateDocumentList, getAllCampaigns, removeFromWatchlist, addToWatchlist, reportCampaign } = require('../controller/campaignController');
 const { donate, getAllPaymentDetails } = require('../controller/paymentController');
-const { getDonationRules, updateRule, deleteRule, addRule, getDonationBadges, addDonationBadge, deleteDonationBadge, updateBadge, sendEmail, getUserChat, sendChatMessage, getAdminDashboardDetails, postComment, postCampaignUpdate, updateCampaignStory, getUserLog, getCampaaignCreatorRequest } = require('../controller/miscController');
+const { getDonationRules, updateRule, deleteRule, addRule, getDonationBadges, addDonationBadge, deleteDonationBadge, updateBadge, sendEmail, getUserChat, sendChatMessage, getAdminDashboardDetails, postComment, postCampaignUpdate, updateCampaignStory, getUserLog, getCampaaignCreatorRequest, getAllReportedCampaigns } = require('../controller/miscController');
 
 const router = express.Router();
 
@@ -34,6 +34,7 @@ router.post('/campaign/updateDocumentList', updateDocumentList);
 router.post('/campaign/getAllCampaigns', getAllCampaigns);
 router.post('/campaign/removeFromWatchlist', removeFromWatchlist);
 router.post('/campaign/addToWatchlist', addToWatchlist);
+router.post('/campaign/reportCampaign', reportCampaign);
 
 // Payments
 router.post('/payment/donate', donate);
@@ -57,6 +58,7 @@ router.post('/misc/postCampaignUpdate', postCampaignUpdate);
 router.post('/misc/updateCampaignStory', updateCampaignStory);
 router.post('/misc/getUserLog', getUserLog);
 router.get('/misc/getCampaaignCreatorRequest', getCampaaignCreatorRequest);
+router.post('/misc/getAllReportedCampaigns', getAllReportedCampaigns);
 
 module.exports = {
     routes: router

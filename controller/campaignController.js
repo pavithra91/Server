@@ -694,6 +694,44 @@ const addToWatchlist = async (req, res, next) => {
   }
 }
 
+// Report Campaign
+const reportCampaign = async (req, res, next) => {
+  try {
+    const reportedBy = req.body.id;
+    const campaignId = req.body.campaignId;
+    const reportingReason = req.body.reportingReason;
+    const reportingComment = req.body.reportingComment;
+    var createdDate = new Date();
+
+    var id = db.collection('Reported-Campaigns').doc().id;
+
+        // Create relavent campaign request document
+        const reportData = {
+          campaignId: campaignId,
+          reason: reportingReason,
+          comment: reportingComment,
+          reportedBy: reportedBy,
+          status: 'Active',
+          reportedDate: createdDate
+        };
+    
+        // Create Approval Request
+        const respose = await db.collection('Reported-Campaigns').doc(id).set(reportData).then(() => {
+          return res.status(200).json({
+            status: 'success',
+            data: "",
+            msg: 'Campaign Reported',
+          });
+        });
+
+  } catch (er) {
+    console.log(er);
+    //   res.status(500).json({
+    //     status: 'error',
+    //     error: er,
+    //   });
+  }
+}
 
 
 module.exports = {
@@ -711,6 +749,7 @@ module.exports = {
   updateDocumentList,
   getAllCampaigns,
   removeFromWatchlist,
-  addToWatchlist
+  addToWatchlist,
+  reportCampaign
 }
 

@@ -551,6 +551,35 @@ const getCampaaignCreatorRequest = async (req, res, next) => {
   }
 }
 
+// Get Reported Campaigns
+const getAllReportedCampaigns = async (req, res, next) => {
+  try {
+
+    //let fromDate = req.body.fromDate;
+    //let toDate = req.body.toDate;
+    let status = req.body.status;
+
+    const campaignRef = db.collection('Reported-Campaigns');
+    const doc = await campaignRef.where('status', '==', status).get();
+
+    var reportedCampaignlist = []
+    doc.forEach(items => {
+      reportedCampaignlist.push(items.data());
+    })
+
+    return res.status(200).json({
+      status: 'success',
+      data: reportedCampaignlist,
+      msg: 'Reported Campaign List Found',
+    });
+  } catch (er) {
+     res.status(500).json({
+       status: 'error',
+       error: er,
+     });
+  }
+}
+
 module.exports = {
   getDonationRules,
   updateRule,
@@ -568,5 +597,6 @@ module.exports = {
   postCampaignUpdate,
   updateCampaignStory,
   getUserLog,
-  getCampaaignCreatorRequest
+  getCampaaignCreatorRequest,
+  getAllReportedCampaigns
 }
