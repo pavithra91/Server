@@ -2,7 +2,7 @@ const express = require('express');
 const {addUser, authenticate, getUser, getUserBadgeDetails, updateUserProfileImage, updateUserDetails, resetPasswordSendLink, resetPassword, getAllUsers, updateBio } = require('../controller/userController');
 const { create, getCampaigns, getCampaign, getWatchlist, updateCampaignImage, getCampaignDetails, getTopFundRaisers, getCampaignRequests, UpdateCampaignStatus, getCampaignByCategory, getCampaignByProvince, updateDocumentList, getAllCampaigns, removeFromWatchlist, addToWatchlist, reportCampaign } = require('../controller/campaignController');
 const { donate, getAllPaymentDetails } = require('../controller/paymentController');
-const { getDonationRules, updateRule, deleteRule, addRule, getDonationBadges, addDonationBadge, deleteDonationBadge, updateBadge, sendEmail, getUserChat, sendChatMessage, getAdminDashboardDetails, postComment, postCampaignUpdate, updateCampaignStory, getUserLog, getCampaaignCreatorRequest, getAllReportedCampaigns } = require('../controller/miscController');
+const { getDonationRules, updateRule, deleteRule, addRule, getDonationBadges, addDonationBadge, deleteDonationBadge, updateBadge, sendEmail, getUserChat, sendChatMessage, getAdminDashboardDetails, postComment, postCampaignUpdate, updateCampaignStory, getUserLog, getCampaaignCreatorRequest, getAllReportedCampaigns, hold_releaseCampaign } = require('../controller/miscController');
 
 const router = express.Router();
 
@@ -59,6 +59,7 @@ router.post('/misc/updateCampaignStory', updateCampaignStory);
 router.post('/misc/getUserLog', getUserLog);
 router.get('/misc/getCampaaignCreatorRequest', getCampaaignCreatorRequest);
 router.post('/misc/getAllReportedCampaigns', getAllReportedCampaigns);
+router.post('/misc/hold_releaseCampaign', hold_releaseCampaign);
 
 module.exports = {
     routes: router

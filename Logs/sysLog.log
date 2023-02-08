@@ -362,3 +362,18 @@
 {"level":"info","message":"User lqblyRwIeylJjL6V8Chj Found Sucessfully","request":"/api/user/getUser","timestamp":"2023-02-07T17:46:44.151Z"}
 {"level":"info","message":"User lqblyRwIeylJjL6V8Chj Found Sucessfully","request":"/api/user/getUser","timestamp":"2023-02-07T18:17:44.252Z"}
 {"level":"info","message":"User lqblyRwIeylJjL6V8Chj Found Sucessfully","request":"/api/user/getUser","timestamp":"2023-02-07T18:23:44.763Z"}
+{"level":"info","message":"User Authenticated Sucessfully","request":"/api/user/authenticate","timestamp":"2023-02-08T04:30:41.468Z"}
+{"level":"info","message":"User lqblyRwIeylJjL6V8Chj Found Sucessfully","request":"/api/user/getUser","timestamp":"2023-02-08T04:31:38.974Z"}
+{"level":"info","message":"User lqblyRwIeylJjL6V8Chj Found Sucessfully","request":"/api/user/getUser","timestamp":"2023-02-08T05:03:23.170Z"}
+{"level":"info","message":"User lqblyRwIeylJjL6V8Chj Found Sucessfully","request":"/api/user/getUser","timestamp":"2023-02-08T05:03:54.467Z"}
+{"level":"info","message":"User lqblyRwIeylJjL6V8Chj Found Sucessfully","request":"/api/user/getUser","timestamp":"2023-02-08T09:34:24.706Z"}
+{"level":"info","message":"User lqblyRwIeylJjL6V8Chj Found Sucessfully","request":"/api/user/getUser","timestamp":"2023-02-08T09:35:45.220Z"}
+{"level":"info","message":"User Authenticated Sucessfully","request":"/api/user/authenticate","timestamp":"2023-02-08T14:41:02.958Z"}
+{"level":"info","message":"User Authenticated Sucessfully","request":"/api/user/authenticate","timestamp":"2023-02-08T14:42:00.378Z"}
+{"level":"info","message":"User Authenticated Sucessfully","request":"/api/user/authenticate","timestamp":"2023-02-08T14:42:41.753Z"}
+{"level":"info","message":"User lqblyRwIeylJjL6V8Chj Found Sucessfully","request":"/api/user/getUser","timestamp":"2023-02-08T14:43:16.023Z"}
+{"level":"info","message":"User Authenticated Sucessfully","request":"/api/user/authenticate","timestamp":"2023-02-08T14:53:12.821Z"}
+{"level":"info","message":"User LhfMVoffzJqYSc1YpH6Q Found Sucessfully","request":"/api/user/getUser","timestamp":"2023-02-08T14:53:53.779Z"}
+{"level":"info","message":"User LhfMVoffzJqYSc1YpH6Q Found Sucessfully","request":"/api/user/getUser","timestamp":"2023-02-08T14:57:10.106Z"}
+{"level":"info","message":"User LhfMVoffzJqYSc1YpH6Q Found Sucessfully","request":"/api/user/getUser","timestamp":"2023-02-08T14:57:29.969Z"}
+{"level":"info","message":"User LhfMVoffzJqYSc1YpH6Q Found Sucessfully","request":"/api/user/getUser","timestamp":"2023-02-08T15:21:31.332Z"}

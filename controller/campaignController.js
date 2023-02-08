@@ -707,6 +707,7 @@ const reportCampaign = async (req, res, next) => {
 
         // Create relavent campaign request document
         const reportData = {
+          incidentId: id,
           campaignId: campaignId,
           reason: reportingReason,
           comment: reportingComment,

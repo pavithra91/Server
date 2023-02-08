@@ -580,6 +580,36 @@ const getAllReportedCampaigns = async (req, res, next) => {
   }
 }
 
+
+// Hold or Release Campaign
+const hold_releaseCampaign = async (req, res, next) => {
+  try {
+
+    //let fromDate = req.body.fromDate;
+    let incidnetId = req.body.incidentId;
+    let incidentStatus = req.body.incidentStatus;
+    let CampaignStatus = req.body.CampaignStatus;
+    let id = req.body.campaignId;
+
+    const campaignRef = db.collection('Campaign').doc(id);
+    const response1 = await campaignRef.update({ campaignStatus: CampaignStatus });
+
+    const incidentRef = db.collection('Reported-Campaigns').doc(incidnetId);
+    const response2 = await incidentRef.update({ status: incidentStatus });
+
+    return res.status(200).json({
+      status: 'success',
+      msg: 'Campaign Status Change to ' + status,
+    });
+
+  } catch (er) {
+     res.status(500).json({
+       status: 'error',
+       error: er,
+     });
+  }
+}
+
 module.exports = {
   getDonationRules,
   updateRule,
@@ -598,5 +628,6 @@ module.exports = {
   updateCampaignStory,
   getUserLog,
   getCampaaignCreatorRequest,
-  getAllReportedCampaigns
+  getAllReportedCampaigns,
+  hold_releaseCampaign
 }
